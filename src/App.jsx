@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Login } from "./pages/auth/login";
-import { Dashboard } from "./pages/dashboard/dashboard";
 import { Style } from "./pages/style/style";
 import { Users } from "./pages/user/users";
 import { StatisticsSells } from "./pages/statistics/statistics-sells";
@@ -20,9 +19,12 @@ function App() {
         {/* Rutas protegidas */}
         {isLoggedIn && (
           <Route element={<BaseLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/styles" element={<Style />} />
             <Route path="/users" element={<Users />} />
+            {/*Por ahora */}
+            <Route path="/users/waiters" element={<Users />} />
+            <Route path="/users/leaders" element={<Users />} />
+            <Route path="/statistics" element={<StatisticsSells />} />
             <Route path="/statistics/sells" element={<StatisticsSells />} />
             <Route path="/statistics/waiter" element={<StatisticsWaiter />} />
           </Route>

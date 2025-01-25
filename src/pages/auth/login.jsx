@@ -11,7 +11,7 @@ export function Login() {
 
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
-    navigate("/dashboard");
+    navigate("/statistics");
   };
 
   return (
