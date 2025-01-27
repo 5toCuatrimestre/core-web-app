@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 
 const { Sider, Content } = Layout;
 
-const BaseLayout: React.FC = () => {
+export function BaseLayout(){
   return (
     <Layout style={{ height: "100vh" }}> 
       <Sider width={180} style={{ overflow: "auto" }}>
@@ -20,4 +20,3 @@ const BaseLayout: React.FC = () => {
   );
 };
 
-export default BaseLayout;

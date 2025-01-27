@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {BaseLayout} from "./pages/layouts/BaseLayout";
 import { Login } from "./pages/auth/login";
 import { Style } from "./pages/style/style";
 import { Users } from "./pages/user/users";
 import { StatisticsSells } from "./pages/statistics/statistics-sells";
 import { StatisticsWaiter } from "./pages/statistics/statistics-waiter";
-import BaseLayout from "./pages/layouts/BaseLayout";
+
+
 
 function App() {
   const isLoggedIn = true;
