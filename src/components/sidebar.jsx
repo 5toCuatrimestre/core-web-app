@@ -15,7 +15,7 @@ const treeData = [
     key: "statistics",
     icon: <BarChartOutlined />,
     children: [
-      { title: "Meseros", key: "statistics/waiter" },
+      { title: "Servicio", key: "statistics/service" },
       { title: "Ventas", key: "statistics/sells" },
     ],
   },

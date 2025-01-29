@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { createStyle, getActiveStyle } from "../services/style";
-
+import { LoadingSpinner } from "../components/loadingSpinner";
 export const StyleContext = createContext();
 
 export function StyleContextProvider({ children }) {
@@ -93,7 +93,7 @@ export function StyleContextProvider({ children }) {
     }, []);
 
     if (!style) {
-        return <div>Loading styles...</div>;
+        return <LoadingSpinner/>;
     }
 
     return (

@@ -27,7 +27,6 @@ export function BaseLayout() {
         {/* Pasamos el estado y función de toggle al Sidebar */}
         <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       </Sider>
-
       {/* Contenido principal */}
       <Content style={{ padding: "16px" }}>
         <Outlet />

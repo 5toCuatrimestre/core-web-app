@@ -4,7 +4,7 @@ import { Login } from "./pages/auth/login";
 import { Style } from "./pages/style/style";
 import { Users } from "./pages/user/users";
 import { StatisticsSells } from "./pages/statistics/statistics-sells";
-import { StatisticsWaiter } from "./pages/statistics/statistics-waiter";
+import { StatisticsService} from "./pages/statistics/statistics-service";
 
 
 
@@ -28,7 +28,7 @@ function App() {
             <Route path="/users/leaders" element={<Users />} />
             <Route path="/statistics" element={<StatisticsSells />} />
             <Route path="/statistics/sells" element={<StatisticsSells />} />
-            <Route path="/statistics/waiter" element={<StatisticsWaiter />} />
+            <Route path="/statistics/service" element={<StatisticsService />} />
           </Route>
         )}
 
