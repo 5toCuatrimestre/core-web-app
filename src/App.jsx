@@ -24,8 +24,7 @@ function App() {
             <Route path="/styles" element={<Style />} />
             <Route path="/users" element={<Users />} />
             {/*Por ahora */}
-            <Route path="/users/waiters" element={<Users />} />
-            <Route path="/users/leaders" element={<Users />} />
+            <Route path="/users/" element={<Users />} />
             <Route path="/statistics" element={<StatisticsSells />} />
             <Route path="/statistics/sells" element={<StatisticsSells />} />
             <Route path="/statistics/service" element={<StatisticsService />} />

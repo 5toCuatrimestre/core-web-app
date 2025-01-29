@@ -23,10 +23,6 @@ const treeData = [
     title: "Usuarios",
     key: "users",
     icon: <TeamOutlined />,
-    children: [
-      { title: "Líderes", key: "users/leaders" },
-      { title: "Meseros", key: "users/waiters" },
-    ],
   },
   { title: "Estilos", key: "styles", icon: <SettingOutlined /> },
 ];
