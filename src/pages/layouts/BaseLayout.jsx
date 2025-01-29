@@ -1,22 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { Layout } from "antd";
 import { Sidebar } from "../../components/sidebar";
 import { Outlet } from "react-router-dom";
 
 const { Sider, Content } = Layout;
 
-export function BaseLayout(){
+export function BaseLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
   return (
-    <Layout style={{ height: "100vh" }}> 
-      <Sider width={180} style={{ overflow: "auto" }}>
-        <Sidebar/>
+    <Layout style={{ height: "100vh" }}>
+      {/* Sider con tamaño dinámico */}
+      <Sider
+        width={isSidebarOpen ? 192 : 64} // Ajusta el ancho según el estado
+        style={{
+          background: "white",
+          transition: "all .2s ease-in-out",
+          overflow: "hidden", 
+        }}
+        className="flex"
+      >
+        {/* Pasamos el estado y función de toggle al Sidebar */}
+        <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       </Sider>
 
-      {/* Main Content */}
-      <Content style={{ padding: "16px"}}>
+      {/* Contenido principal */}
+      <Content style={{ padding: "16px" }}>
         <Outlet />
       </Content>
     </Layout>
   );
-};
-
+}

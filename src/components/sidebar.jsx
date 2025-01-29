@@ -7,84 +7,99 @@ import {
 } from "@ant-design/icons";
 import { StyleContext } from "../core/StyleContext";
 import { useNavigate } from "react-router-dom";
+import { MenuOpen, Menu } from "@mui/icons-material";
 
 const treeData = [
   {
     title: "Estadísticas",
     key: "statistics",
-    icon: <BarChartOutlined style={{ color: "inherit" }} />, // Dinámico
+    icon: <BarChartOutlined />,
     children: [
-      {
-        title: "Meseros",
-        key: "statistics/waiter",
-      },
-      {
-        title: "Ventas",
-        key: "statistics/sells",
-      },
+      { title: "Meseros", key: "statistics/waiter" },
+      { title: "Ventas", key: "statistics/sells" },
     ],
   },
-  //Usuarios
   {
     title: "Usuarios",
     key: "users",
-    icon: <TeamOutlined style={{ color: "inherit" }} />, // Dinámico
+    icon: <TeamOutlined />,
     children: [
-      {
-        title: "Líderes",
-        key: "users/leaders",
-      },
-      {
-        title: "Meseros",
-        key: "users/waiters",
-      },
+      { title: "Líderes", key: "users/leaders" },
+      { title: "Meseros", key: "users/waiters" },
     ],
   },
-  {
-    title: "Estilos",
-    key: "styles",
-    icon: <SettingOutlined style={{ color: "inherit" }} />,
-  },
+  { title: "Estilos", key: "styles", icon: <SettingOutlined /> },
 ];
 
-export function Sidebar() {
+export function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const { style } = useContext(StyleContext);
   const navigate = useNavigate();
 
   const onSelect = (selectedKeys, info) => {
-    console.log(info)
-    const selectedKey = selectedKeys[0]; 
-    navigate(`/${selectedKey}`); 
+    console.log(info);
+    const selectedKey = selectedKeys[0];
+    navigate(`/${selectedKey}`);
   };
-
   return (
     <div
-      style={{
-        backgroundColor: style.lightBackgroundColor,
-        height: "100vh",
-        width: 180,
-      }}
-      className="p-2"
+      className={`h-full flex flex-col ${isSidebarOpen ? "w-48" : "w-16"} bg-white`}
     >
-      <Tree
-        showIcon
-        treeData={treeData.map((node) => ({ 
-          ...node,
-          icon: React.isValidElement(node.icon)
-            ? React.cloneElement(node.icon, {
-                style: { color: style.baseColor },
-              })
-            : null,
-          children: node.children?.map((child) => ({
-            ...child,
-            style: { color: style.lightBackgroundColor, },
-          })),
+      {/* Botón de Toggle */}
+      <div className="p-3 flex justify-between items-center">
+        <span
+          className={`${isSidebarOpen ? "text-black" : "hidden"} text-lg font-semibold`}
+          style={{ color: style.baseColor }}
+        >
+          Menú
+        </span>
+        <button
+          onClick={toggleSidebar}
+          className="p-2 bg-gray-100 text-black rounded-full shadow-md"
+          style={{ color: style.baseColor }}
+        >
+          {isSidebarOpen ? <MenuOpen /> : <Menu />}
+        </button>
+      </div>
 
-        }))}
-        onSelect={onSelect}
-        defaultExpandAll
-        style={{ paddingTop: 10, paddingBottom: 10, color: style.baseColor }}
-      />
+      {/* Contenedor del Tree con ajuste dinámico */}
+      <div className="flex-grow">
+        <Tree
+          treeData={treeData.map((node) => ({
+            ...node,
+            title: (
+              <div className="flex items-center min-w-[64px]">
+                {React.isValidElement(node.icon) &&
+                  React.cloneElement(node.icon, {
+                    style: { color: style.baseColor },
+                    className: `transition-all duration-500${
+                      isSidebarOpen
+                        ? "text-black text-2xl mr-2" // Expandida: Ícono normal con margen a la derecha
+                        : "text-black text-3xl pl-11" // Colapsada: Ícono más grande y sin margen
+                    }`,
+                  })}
+                <span
+                  className={`${isSidebarOpen ? "block text-1xl" : "invisible mt-4"}`}
+                  style={{ color: style.baseColor }}
+                >
+                  {node.title}
+                </span>
+              </div>
+            ), // Ícono y título en la misma línea
+
+            children: isSidebarOpen
+              ? node.children?.map((child) => ({
+                  ...child,
+                  style: { color: style.lightBackgroundColor },
+                }))
+              : null,
+          }))}
+          onSelect={onSelect}
+          defaultExpandAll
+          className={`transition-all duration-500 m-2 ${
+            isSidebarOpen ? "pl-2" : "flex justify-center"
+          }`}
+        />
+      </div>
     </div>
   );
 }
