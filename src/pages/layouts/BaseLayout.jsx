@@ -13,22 +13,17 @@ export function BaseLayout() {
   };
 
   return (
-    <Layout style={{ height: "100vh" }}>
+    <Layout className="h-screen overflow-hidden">
       {/* Sider con tamaño dinámico */}
       <Sider
         width={isSidebarOpen ? 192 : 64} // Ajusta el ancho según el estado
-        style={{
-          background: "white",
-          transition: "all .2s ease-in-out",
-          overflow: "hidden", 
-        }}
-        className="flex"
+        className="bg-white transition-all duration-200 ease-in-out overflow-hidden flex"
       >
         {/* Pasamos el estado y función de toggle al Sidebar */}
         <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       </Sider>
       {/* Contenido principal */}
-      <Content style={{ padding: "16px" }}>
+      <Content className="p-4 overflow-auto h-full">
         <Outlet />
       </Content>
     </Layout>

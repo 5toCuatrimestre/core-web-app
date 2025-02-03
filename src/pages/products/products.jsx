@@ -16,16 +16,16 @@ import {
   User,
   Pagination,
 } from "@heroui/react";
-import { ModalU } from "../../components/modalU";
-import { users } from "../../json/users";
+import { ModalP } from "../../components/ModalP";
+import { products } from "../../json/products";
 
 export const columns = [
-  { name: "ID", uid: "user_id", sortable: true },
+  { name: "ID", uid: "productId", sortable: true },
   { name: "NOMBRE", uid: "name", sortable: true },
-  { name: "TELÉFONO", uid: "phone_number" },
-  { name: "ROL", uid: "role", sortable: true },
+  { name: "DESCRIPCIÓN", uid: "description" },
+  { name: "PRECIO", uid: "price", sortable: true },
   { name: "ESTADO", uid: "status", sortable: true },
-  { name: "CREADO EN", uid: "created_at", sortable: true },
+  { name: "CREADO EN", uid: "createdAt", sortable: true },
   { name: "ACCIONES", uid: "actions" },
 ];
 
@@ -145,7 +145,7 @@ const statusColorMap = {
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
 
-export function Users() {
+export function Products() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -155,7 +155,7 @@ export function Users() {
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [sortDescriptor, setSortDescriptor] = React.useState({
-    column: "age",
+    column: "price",
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
@@ -171,24 +171,24 @@ export function Users() {
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...users];
+    let filteredProducts = [...products];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase())
+      filteredProducts = filteredProducts.filter((product) =>
+        product.name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status)
+      filteredProducts = filteredProducts.filter((product) =>
+        Array.from(statusFilter).includes(product.status)
       );
     }
 
-    return filteredUsers;
-  }, [users, filterValue, statusFilter]);
+    return filteredProducts;
+  }, [products, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -209,8 +209,8 @@ export function Users() {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
+  const renderCell = React.useCallback((product, columnKey) => {
+    const cellValue = product[columnKey];
 
     switch (columnKey) {
       case "name":
@@ -218,13 +218,13 @@ export function Users() {
           <User
             avatarProps={{
               radius: "lg",
-              src: user.avatar,
+              src: product.avatar,
               className: "hidden",
             }}
-            description={user.email}
+            description={product.email}
             name={cellValue}
           >
-            {user.email}
+            {product.email}
           </User>
         );
       case "role":
@@ -232,7 +232,7 @@ export function Users() {
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
             <p className="text-bold text-tiny capitalize text-default-400">
-              {user.team}
+              {product.team}
             </p>
           </div>
         );
@@ -240,7 +240,7 @@ export function Users() {
         return (
           <Chip
             className="capitalize"
-            color={statusColorMap[user.status]}
+            color={statusColorMap[product.status]}
             size="sm"
             variant="flat"
           >
@@ -257,9 +257,9 @@ export function Users() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem key="view">View</DropdownItem>
-                <DropdownItem key="edit">Edit</DropdownItem>
-                <DropdownItem key="delete">Delete</DropdownItem>
+                <DropdownItem key="view">Ver</DropdownItem>
+                <DropdownItem key="edit">Editar</DropdownItem>
+                <DropdownItem key="delete">Eliminar</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -362,14 +362,18 @@ export function Users() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />} onPress={() => setIsModalOpen(true)}>
+            <Button
+              color="primary"
+              endContent={<PlusIcon />}
+              onPress={() => setIsModalOpen(true)}
+            >
               Añadir
             </Button>
           </div>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Total {users.length} usuarios
+            Total {products.length} productos
           </span>
           <label className="flex items-center text-default-400 text-small">
             Filas por página:
@@ -390,7 +394,7 @@ export function Users() {
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    users.length,
+    products.length,
     onSearchChange,
     hasSearchFilter,
   ]);
@@ -436,46 +440,46 @@ export function Users() {
 
   return (
     <>
-    <ModalU isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    <Table
-      isHeaderSticky
-      aria-label="Example table with custom cells, pagination and sorting"
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      classNames={{
-        wrapper: "h-auto",
-      }}
-      selectedKeys={selectedKeys}
-      sortDescriptor={sortDescriptor}
-      topContent={topContent}
-      topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody
-        emptyContent={"No se encontraron usuarios"}
-        items={sortedItems}
+      <ModalP isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <Table
+        isHeaderSticky
+        aria-label="Example table with custom cells, pagination and sorting"
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
+        classNames={{
+          wrapper: "h-auto",
+        }}
+        selectedKeys={selectedKeys}
+        sortDescriptor={sortDescriptor}
+        topContent={topContent}
+        topContentPlacement="outside"
+        onSelectionChange={setSelectedKeys}
+        onSortChange={setSortDescriptor}
       >
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+        <TableHeader columns={headerColumns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "actions" ? "center" : "start"}
+              allowsSorting={column.sortable}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody
+          emptyContent={"No se encontraron usuarios"}
+          items={sortedItems}
+        >
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(item, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </>
   );
 }

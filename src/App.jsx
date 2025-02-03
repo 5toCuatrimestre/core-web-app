@@ -3,9 +3,8 @@ import {BaseLayout} from "./pages/layouts/BaseLayout";
 import { Login } from "./pages/auth/login";
 import { Style } from "./pages/style/style";
 import { Users } from "./pages/user/users";
-import { StatisticsSells } from "./pages/statistics/statistics-sells";
-import { StatisticsService} from "./pages/statistics/statistics-service";
-
+import { Statistics } from "./pages/statistics/statistics";
+import { Products } from "./pages/products/products";
 
 
 function App() {
@@ -23,11 +22,8 @@ function App() {
           <Route element={<BaseLayout />}>
             <Route path="/styles" element={<Style />} />
             <Route path="/users" element={<Users />} />
-            {/*Por ahora */}
-            <Route path="/users/" element={<Users />} />
-            <Route path="/statistics" element={<StatisticsSells />} />
-            <Route path="/statistics/sells" element={<StatisticsSells />} />
-            <Route path="/statistics/service" element={<StatisticsService />} />
+            <Route path="/statistics" element={<Statistics />} />
+            <Route path="/products" element={<Products/>} />
           </Route>
         )}
 

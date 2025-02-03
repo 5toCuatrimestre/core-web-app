@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import { StyleContext } from "../core/StyleContext";
 import { useNavigate } from "react-router-dom";
+import RestaurantIcon from '@mui/icons-material/Restaurant';
 import { MenuOpen, Menu } from "@mui/icons-material";
 
 const treeData = [
@@ -14,16 +15,13 @@ const treeData = [
     title: "Estadísticas",
     key: "statistics",
     icon: <BarChartOutlined />,
-    children: [
-      { title: "Servicio", key: "statistics/service" },
-      { title: "Ventas", key: "statistics/sells" },
-    ],
   },
   {
     title: "Usuarios",
     key: "users",
     icon: <TeamOutlined />,
   },
+  { title: "Productos", key: "products", icon: <RestaurantIcon /> },
   { title: "Estilos", key: "styles", icon: <SettingOutlined /> },
 ];
 
