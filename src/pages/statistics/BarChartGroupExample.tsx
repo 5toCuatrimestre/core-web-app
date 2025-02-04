@@ -1,64 +1,48 @@
 "use client"
+
 import React from "react";
-import { BarChart } from "../../components/BarChart/BarChart"
+import { BarChart } from "../../components/BarChart/BarChart";
 
 const chartdata = [
   {
-    name: "Topic 1",
-    "Group A": 890,
-    "Group B": 338,
-    "Group C": 538,
-    "Group D": 396,
-    "Group E": 138,
-    "Group F": 436,
+    name: "Líder Juan",
+    "Mesero A": 890,
+    "Mesero B": 338,
+    "Mesero C": 538,
   },
   {
-    name: "Topic 2",
-    "Group A": 289,
-    "Group B": 233,
-    "Group C": 253,
-    "Group D": 333,
-    "Group E": 133,
-    "Group F": 533,
+    name: "Líder María",
+    "Mesero D": 396,
+    "Mesero E": 138,
+    "Mesero F": 436,
   },
   {
-    name: "Topic 3",
-    "Group A": 380,
-    "Group B": 535,
-    "Group C": 352,
-    "Group D": 718,
-    "Group E": 539,
-    "Group F": 234,
+    name: "Líder Pedro",
+    "Mesero G": 289,
+    "Mesero H": 233,
+    "Mesero I": 253,
   },
   {
-    name: "Topic 4",
-    "Group A": 90,
-    "Group B": 98,
-    "Group C": 28,
-    "Group D": 33,
-    "Group E": 61,
-    "Group F": 53,
+    name: "Líder Ana",
+    "Mesero J": 333,
+    "Mesero K": 133,
+    "Mesero L": 533,
   },
-]
+];
 
 const dataFormatter = (number: number) =>
-  Intl.NumberFormat("us").format(number).toString()
+  Intl.NumberFormat("us").format(number).toString();
 
-export function BarChartGroupExample() {
+export const BarChartGroupExample = () => {
   return (
     <BarChart
+      className="h-72"
       data={chartdata}
       index="name"
-      categories={[
-        "Group A",
-        "Group B",
-        "Group C",
-        "Group D",
-        "Group E",
-        "Group F",
-      ]}
+      categories={["Mesero A", "Mesero B", "Mesero C", "Mesero D", "Mesero E", "Mesero F", "Mesero G", "Mesero H", "Mesero I", "Mesero J", "Mesero K", "Mesero L"]}
       valueFormatter={dataFormatter}
-      yAxisWidth={48}
+      yAxisWidth={80}
+      layout="horizontal"
     />
-  )
-}
+  );
+};

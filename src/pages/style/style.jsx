@@ -163,28 +163,30 @@ export function Style() {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-6 bg-gray-100 p-6 rounded-lg max-h-screen overflow-auto shadow-md border border-gray-300">
-  <h2 className="text-xl font-bold text-gray-800">Subir Logo</h2>
-  <div className="flex flex-col items-center justify-center w-full bg-white p-4 rounded-lg shadow-md">
-    <UploadOutlined className="text-5xl text-gray-500 mb-2" />
-    <input
-      type="file"
-      accept=".png,.jpg,.svg"
-      onChange={handleImageUpload}
-      className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:border file:rounded-lg file:bg-blue-100 file:text-blue-800 file:hover:bg-blue-200 transition-all cursor-pointer"
-    />
-  </div>
-  {logo && (
-    <div className="flex flex-col items-center w-full p-4 bg-white rounded-lg shadow-md border border-gray-300">
-      <span className="text-gray-700 text-sm font-medium">Vista previa</span>
-      <img
-        src={logo}
-        alt="Logo preview"
-        className="mt-3 max-h-32 object-contain border rounded-lg p-2"
-      />
-    </div>
-  )}
-</div>
+      <div className="flex flex-col gap-6 bg-gray-100 p-4 rounded-lg max-h-screen overflow-auto shadow-md border border-gray-300">
+        <h2 className="text-xl font-bold text-gray-800">Subir Logo</h2>
+        <div className="flex flex-col items-center justify-center w-full bg-white p-4 rounded-lg shadow-md">
+          <UploadOutlined className="text-5xl text-gray-500 mb-2" />
+          <input
+            type="file"
+            accept=".png,.jpg,.svg"
+            onChange={handleImageUpload}
+            className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:border file:rounded-lg file:bg-blue-100 file:text-blue-800 file:hover:bg-blue-200 transition-all cursor-pointer"
+          />
+        </div>
+        {logo && (
+          <div className="flex flex-col items-center w-full p-4 bg-white rounded-lg shadow-md border border-gray-300">
+            <span className="text-gray-700 text-sm font-medium">
+              Vista previa
+            </span>
+            <img
+              src={logo}
+              alt="Logo preview"
+              className="mt-3 max-h-32 object-contain border rounded-lg p-2"
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

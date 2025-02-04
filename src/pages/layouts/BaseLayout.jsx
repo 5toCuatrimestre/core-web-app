@@ -16,8 +16,9 @@ export function BaseLayout() {
     <Layout className="h-screen overflow-hidden">
       {/* Sider con tamaño dinámico */}
       <Sider
-        width={isSidebarOpen ? 192 : 64} // Ajusta el ancho según el estado
-        className="bg-white transition-all duration-200 ease-in-out overflow-hidden flex"
+        width={isSidebarOpen ? 192 : 64}
+        className="bg-white transition-transform duration-300 ease-in-out overflow-hidden flex will-change-transform"
+        style={{ transform: `translateX(0)` }}
       >
         {/* Pasamos el estado y función de toggle al Sidebar */}
         <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />

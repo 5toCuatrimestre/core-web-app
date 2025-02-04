@@ -4,51 +4,35 @@ import React from "react"
 import { BarChart, type BarChartEventProps } from "../../components/BarChart/BarChart"
 
 const chartdata = [
-  {
-    name: "Amphibians",
-    "Number of threatened species": 2488,
-  },
-  {
-    name: "Birds",
-    "Number of threatened species": 1445,
-  },
-  {
-    name: "Crustaceans",
-    "Number of threatened species": 743,
-  },
-  {
-    name: "Ferns",
-    "Number of threatened species": 281,
-  },
-  {
-    name: "Arachnids",
-    "Number of threatened species": 251,
-  },
-  {
-    name: "Corals",
-    "Number of threatened species": 232,
-  },
-  {
-    name: "Algae",
-    "Number of threatened species": 98,
-  },
-]
+  { hour: "08:00", ventas: 120 },
+  { hour: "09:00", ventas: 150 },
+  { hour: "10:00", ventas: 200 },
+  { hour: "11:00", ventas: 250 },
+  { hour: "12:00", ventas: 300 },
+  { hour: "13:00", ventas: 500 },
+  { hour: "14:00", ventas: 700 },
+  { hour: "15:00", ventas: 650 },
+  { hour: "16:00", ventas: 600 },
+  { hour: "17:00", ventas: 750 },
+  { hour: "18:00", ventas: 800 },
+  { hour: "19:00", ventas: 850 },
+  { hour: "20:00", ventas: 900 },
+  { hour: "21:00", ventas: 950 },
+  { hour: "22:00", ventas: 700 },
+];
+
+const dataFormatter = (number: number) =>
+  Intl.NumberFormat("us").format(number).toString();
 
 export const BarChartOnValueChangeExample = () => {
-  const [value, setValue] = React.useState<BarChartEventProps>(null)
   return (
-    <>
-      <BarChart
-        className="h-72"
-        data={chartdata}
-        index="name"
-        categories={["Number of threatened species"]}
-        yAxisWidth={45}
-        onValueChange={(v) => setValue(v)}
-      />
-      {/* <pre className="mt-8 rounded-md bg-gray-950 p-3 text-sm text-white dark:bg-gray-800 ">
-        {JSON.stringify(value, null, 2)}
-      </pre> */}
-    </>
-  )
-}
+    <BarChart
+      className="h-72"
+      data={chartdata}
+      index="hour"
+      categories={["ventas"]}
+      valueFormatter={dataFormatter}
+      yAxisWidth={45}
+    />
+  );
+};

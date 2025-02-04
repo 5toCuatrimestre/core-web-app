@@ -3,12 +3,11 @@ import { Tree } from "antd";
 import {
   BarChartOutlined,
   TeamOutlined,
-  SettingOutlined,
+  SettingOutlined, ProductOutlined
 } from "@ant-design/icons";
 import { StyleContext } from "../core/StyleContext";
 import { useNavigate } from "react-router-dom";
-import RestaurantIcon from '@mui/icons-material/Restaurant';
-import { MenuOpen, Menu } from "@mui/icons-material";
+import { MenuOpen, Menu} from "@mui/icons-material";
 
 const treeData = [
   {
@@ -21,7 +20,7 @@ const treeData = [
     key: "users",
     icon: <TeamOutlined />,
   },
-  { title: "Productos", key: "products", icon: <RestaurantIcon /> },
+  { title: "Productos", key: "products", icon: <ProductOutlined />},
   { title: "Estilos", key: "styles", icon: <SettingOutlined /> },
 ];
 
@@ -65,7 +64,7 @@ export function Sidebar({ isSidebarOpen, toggleSidebar }) {
                 {React.isValidElement(node.icon) &&
                   React.cloneElement(node.icon, {
                     style: { color: style.baseColor },
-                    className: `transition-all duration-500${
+                    className: `${
                       isSidebarOpen
                         ? "text-black text-2xl mr-2" // Expandida: Ícono normal con margen a la derecha
                         : "text-black text-3xl pl-11" // Colapsada: Ícono más grande y sin margen
@@ -78,7 +77,7 @@ export function Sidebar({ isSidebarOpen, toggleSidebar }) {
                   {node.title}
                 </span>
               </div>
-            ), // Ícono y título en la misma línea
+            ),
 
             children: isSidebarOpen
               ? node.children?.map((child) => ({
@@ -89,7 +88,7 @@ export function Sidebar({ isSidebarOpen, toggleSidebar }) {
           }))}
           onSelect={onSelect}
           defaultExpandAll
-          className={`transition-all duration-500 m-2 ${
+          className={`m-2 ${
             isSidebarOpen ? "pl-2" : "flex justify-center"
           }`}
         />

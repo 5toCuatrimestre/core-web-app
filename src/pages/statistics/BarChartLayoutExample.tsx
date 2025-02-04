@@ -1,35 +1,36 @@
 "use client"
+
 import React from "react"
 import { BarChart } from "../../components/BarChart/BarChart"
 
 const chartdata = [
   {
-    name: "Amphibians",
-    "Number of threatened species": 2488,
+    name: "Tacos al Pastor",
+    Ventas: 2488,
   },
   {
-    name: "Birds",
-    "Number of threatened species": 1445,
+    name: "Hamburguesa",
+    Ventas: 1445,
   },
   {
-    name: "Crustaceans",
-    "Number of threatened species": 743,
+    name: "Pizza Pepperoni",
+    Ventas: 743,
   },
   {
-    name: "Ferns",
-    "Number of threatened species": 281,
+    name: "Sushi Roll",
+    Ventas: 281,
   },
   {
-    name: "Arachnids",
-    "Number of threatened species": 251,
+    name: "Ensalada César",
+    Ventas: 251,
   },
   {
-    name: "Corals",
-    "Number of threatened species": 232,
+    name: "Hot Dog",
+    Ventas: 232,
   },
   {
-    name: "Algae",
-    "Number of threatened species": 98,
+    name: "Pasta Alfredo",
+    Ventas: 98,
   },
 ]
 
@@ -39,7 +40,7 @@ export const BarChartLayoutExample = () => {
       className="h-72"
       data={chartdata}
       index="name"
-      categories={["Number of threatened species"]}
+      categories={["Ventas"]}
       yAxisWidth={80}
       layout="vertical"
     />

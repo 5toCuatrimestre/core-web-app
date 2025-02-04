@@ -8,7 +8,7 @@ export function Statistics() {
   const { style } = useContext(StyleContext);
 
   return (
-    <div className="grid grid-cols-2 gap-4 p-4">
+    <div className="grid grid-cols-2 gap-4">
       {/* Ventas Totales */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-bold mb-4">Ventas Totales</h2>
