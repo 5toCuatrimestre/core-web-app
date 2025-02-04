@@ -67,7 +67,7 @@ export function Login() {
             <Form.Item name="remember" valuePropName="checked" noStyle>
               <Checkbox style={{ color: "#ffffff" }}>Remember me</Checkbox>
             </Form.Item>
-            <a href="" style={{ color: style.lightBackgroundColor }}>Forgot password</a>
+            <a href="" style={{ color: "#ffffff"}}>Forgot password</a>
           </div>
         </Form.Item>
 
