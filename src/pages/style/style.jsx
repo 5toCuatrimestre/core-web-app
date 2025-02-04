@@ -50,7 +50,7 @@ export function Style() {
   };
 
   return (
-    <div className="p-6 h-full max-w-6xl mx-auto bg-white shadow-xl rounded-lg grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
+    <div className="p-6 h-full max-w-8xl bg-white shadow-xl rounded-lg grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
       <div className="flex flex-col gap-4 bg-gray-100 p-4 rounded-lg max-h-screen overflow-auto">
         <h2 className="text-xl font-bold mb-2">Selecciona los colores</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-center items-center w-full">
