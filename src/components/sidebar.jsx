@@ -3,7 +3,7 @@ import { Tree } from "antd";
 import {
   BarChartOutlined,
   TeamOutlined,
-  SettingOutlined, ProductOutlined
+  SettingOutlined, ProductOutlined, ProjectOutlined
 } from "@ant-design/icons";
 import { StyleContext } from "../core/StyleContext";
 import { useNavigate } from "react-router-dom";
@@ -12,16 +12,17 @@ import { MenuOpen, Menu} from "@mui/icons-material";
 const treeData = [
   {
     title: "Estadísticas",
-    key: "statistics",
+    key: "statistic",
     icon: <BarChartOutlined />,
   },
   {
     title: "Usuarios",
-    key: "users",
+    key: "user",
     icon: <TeamOutlined />,
   },
-  { title: "Productos", key: "products", icon: <ProductOutlined />},
-  { title: "Estilos", key: "styles", icon: <SettingOutlined /> },
+  { title: "Productos", key: "product", icon: <ProductOutlined />},
+  { title: "Carta", key: "dish", icon: <ProjectOutlined />},
+  { title: "Estilos", key: "style", icon: <SettingOutlined /> },
 ];
 
 export function Sidebar({ isSidebarOpen, toggleSidebar }) {

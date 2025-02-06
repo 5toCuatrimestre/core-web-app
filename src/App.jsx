@@ -5,6 +5,7 @@ import { Style } from "./pages/style/style";
 import { Users } from "./pages/user/users";
 import { Statistics } from "./pages/statistics/statistics";
 import { Products } from "./pages/products/products";
+import { Dish } from "./pages/dish/dish";
 
 
 function App() {
@@ -20,10 +21,11 @@ function App() {
         {/* Rutas protegidas */}
         {isLoggedIn && (
           <Route element={<BaseLayout />}>
-            <Route path="/styles" element={<Style />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/statistics" element={<Statistics />} />
-            <Route path="/products" element={<Products/>} />
+            <Route path="/style" element={<Style />} />
+            <Route path="/user" element={<Users />} />
+            <Route path="/statistic" element={<Statistics />} />
+            <Route path="/product" element={<Products/>} />
+            <Route path="/dish" element={<Dish/>} />
           </Route>
         )}
 
