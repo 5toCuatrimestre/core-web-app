@@ -1,27 +1,21 @@
 import React, { useContext } from "react";
-import { Tree } from "antd";
+import { useNavigate } from "react-router-dom";
 import {
   BarChartOutlined,
   TeamOutlined,
-  SettingOutlined, ProductOutlined, ProjectOutlined
+  SettingOutlined,
 } from "@ant-design/icons";
+import { BiDish } from "react-icons/bi";
+import { RiRestaurantLine } from "react-icons/ri";
+import { MdOutlineFastfood } from "react-icons/md";
 import { StyleContext } from "../core/StyleContext";
-import { useNavigate } from "react-router-dom";
-import { MenuOpen, Menu} from "@mui/icons-material";
+import { MenuOpen, Menu } from "@mui/icons-material";
 
-const treeData = [
-  {
-    title: "Estadísticas",
-    key: "statistic",
-    icon: <BarChartOutlined />,
-  },
-  {
-    title: "Usuarios",
-    key: "user",
-    icon: <TeamOutlined />,
-  },
-  { title: "Productos", key: "product", icon: <ProductOutlined />},
-  { title: "Carta", key: "dish", icon: <ProjectOutlined />},
+const menuItems = [
+  { title: "Estadísticas", key: "statistic", icon: <BarChartOutlined /> },
+  { title: "Usuarios", key: "user", icon: <TeamOutlined /> },
+  { title: "Productos", key: "product", icon: <MdOutlineFastfood /> },
+  { title: "Carta", key: "dish", icon: <RiRestaurantLine /> },
   { title: "Estilos", key: "style", icon: <SettingOutlined /> },
 ];
 
@@ -29,11 +23,6 @@ export function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const { style } = useContext(StyleContext);
   const navigate = useNavigate();
 
-  const onSelect = (selectedKeys, info) => {
-    console.log(info);
-    const selectedKey = selectedKeys[0];
-    navigate(`/${selectedKey}`);
-  };
   return (
     <div
       className={`h-full flex flex-col ${isSidebarOpen ? "w-48" : "w-16"} bg-white`}
@@ -55,45 +44,29 @@ export function Sidebar({ isSidebarOpen, toggleSidebar }) {
         </button>
       </div>
 
-      {/* Contenedor del Tree con ajuste dinámico */}
-      <div className="flex-grow">
-        <Tree
-          treeData={treeData.map((node) => ({
-            ...node,
-            title: (
-              <div className="flex items-center min-w-[64px]">
-                {React.isValidElement(node.icon) &&
-                  React.cloneElement(node.icon, {
-                    style: { color: style.baseColor },
-                    className: `${
-                      isSidebarOpen
-                        ? "text-black text-2xl mr-2" // Expandida: Ícono normal con margen a la derecha
-                        : "text-black text-3xl pl-11" // Colapsada: Ícono más grande y sin margen
-                    }`,
-                  })}
-                <span
-                  className={`${isSidebarOpen ? "block text-1xl" : "invisible mt-4"}`}
-                  style={{ color: style.baseColor }}
-                >
-                  {node.title}
-                </span>
-              </div>
-            ),
-
-            children: isSidebarOpen
-              ? node.children?.map((child) => ({
-                  ...child,
-                  style: { color: style.lightBackgroundColor },
-                }))
-              : null,
-          }))}
-          onSelect={onSelect}
-          defaultExpandAll
-          className={`m-2 ${
-            isSidebarOpen ? "pl-2" : "flex justify-center"
-          }`}
-        />
-      </div>
+      {/* Lista de Menú */}
+      <ul className="flex-grow">
+        {menuItems.map(({ title, key, icon }) => (
+          <li
+            key={key}
+            className={`flex items-center py-2 px-4 cursor-pointer hover:bg-gray-200 transition-all duration-200 ease-in-out${
+              isSidebarOpen ? "justify-start" : "justify-center"
+            }`}
+            onClick={() => navigate(`/${key}`)}
+          >
+            {React.cloneElement(icon, {
+              style: { color: style.baseColor },
+              className: isSidebarOpen ? "text-2xl mr-2" : "text-3xl",
+            })}
+            <span
+              className={`${isSidebarOpen ? "block text-1xl" : "hidden"}`}
+              style={{ color: style.baseColor }}
+            >
+              {title}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
