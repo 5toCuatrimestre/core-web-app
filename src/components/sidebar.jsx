@@ -5,11 +5,11 @@ import {
   TeamOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { BiDish } from "react-icons/bi";
 import { RiRestaurantLine } from "react-icons/ri";
 import { MdOutlineFastfood } from "react-icons/md";
 import { StyleContext } from "../core/StyleContext";
 import { MenuOpen, Menu } from "@mui/icons-material";
+import { TooltipC } from "./tooltipC";
 
 const menuItems = [
   { title: "Estadísticas", key: "statistic", icon: <BarChartOutlined /> },
@@ -47,24 +47,25 @@ export function Sidebar({ isSidebarOpen, toggleSidebar }) {
       {/* Lista de Menú */}
       <ul className="flex-grow">
         {menuItems.map(({ title, key, icon }) => (
-          <li
-            key={key}
-            className={`flex items-center py-2 px-4 cursor-pointer hover:bg-gray-200 transition-all duration-200 ease-in-out${
-              isSidebarOpen ? "justify-start" : "justify-center"
-            }`}
-            onClick={() => navigate(`/${key}`)}
-          >
-            {React.cloneElement(icon, {
-              style: { color: style.baseColor },
-              className: isSidebarOpen ? "text-2xl mr-2" : "text-3xl",
-            })}
-            <span
-              className={`${isSidebarOpen ? "block text-1xl" : "hidden"}`}
-              style={{ color: style.baseColor }}
+          <TooltipC key={key} content={title} showArrow={false} placement="right">
+            <li
+              className={`flex items-center py-2 px-4 cursor-pointer hover:bg-gray-200 transition-all duration-200 ease-in-out${
+                isSidebarOpen ? "justify-start" : "justify-center"
+              }`}
+              onClick={() => navigate(`/${key}`)}
             >
-              {title}
-            </span>
-          </li>
+              {React.cloneElement(icon, {
+                style: { color: style.baseColor },
+                className: isSidebarOpen ? "text-2xl mr-2" : "text-3xl",
+              })}
+              <span
+                className={`${isSidebarOpen ? "block text-1xl" : "hidden"}`}
+                style={{ color: style.baseColor }}
+              >
+                {title}
+              </span>
+            </li>
+          </TooltipC>
         ))}
       </ul>
     </div>
