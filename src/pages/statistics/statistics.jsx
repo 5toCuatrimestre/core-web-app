@@ -10,26 +10,26 @@ export function Statistics() {
   return (
     <div className="grid grid-cols-2 gap-4">
       {/* Ventas Totales */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-bold mb-4">Ventas Totales</h2>
+      <div className="p-6 rounded-lg shadow-md" style={{background:style.BgCard}}>
+        <h1 className="text-xl font-bold mb-4" style={{color:style.H1}}>Ventas Totales</h1>
         <AreaChartAxisLabelsExample />
       </div>
 
       {/* Platillos Más y Menos Vendidos */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-bold mb-4">Platillos Más y Menos Vendidos</h2>
+      <div className="p-6 rounded-lg shadow-md" style={{background:style.BgCard}}>
+        <h1 className="text-xl font-bold mb-4" style={{color:style.H1}}>Platillos Más y Menos Vendidos</h1>
         <BarChartLayoutExample />
       </div>
 
       {/* Ranking de Meseros */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-bold mb-4">Ranking de Meseros</h2>
+      <div className="p-6 rounded-lg shadow-md" style={{background:style.BgCard}}>
+        <h1 className="text-xl font-bold mb-4" style={{color:style.H1}}>Ranking de Meseros</h1>
         <BarChartGroupExample />
       </div>
 
       {/* Horarios de Mayor y Menor Venta */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-bold mb-4">Horarios de Mayor y Menor Venta</h2>
+      <div className="p-6 rounded-lg shadow-md" style={{background:style.BgCard}}>
+        <h1 className="text-xl font-bold mb-4" style={{color:style.H1}}>Horarios de Mayor y Menor Venta</h1>
         <BarChartOnValueChangeExample />
       </div>
     </div>
