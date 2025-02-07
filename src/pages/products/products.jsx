@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import {
   Table,
   TableHeader,
@@ -18,6 +18,7 @@ import {
 } from "@heroui/react";
 import { ModalP } from "../../components/ModalP";
 import { products } from "../../json/products";
+import { StyleContext } from "../../core/StyleContext";
 
 export const columns = [
   { name: "ID", uid: "productId", sortable: true },
@@ -146,6 +147,7 @@ const statusColorMap = {
 const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
 
 export function Products() {
+    const { style } = useContext(StyleContext);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -252,14 +254,14 @@ export function Products() {
           <div className="relative flex justify-end items-center gap-2">
             <Dropdown>
               <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <VerticalDotsIcon className="text-default-300" />
+                <Button isIconOnly size="sm" variant="light" style={{ background: style.BgButton, color: style.P }}>
+                  <VerticalDotsIcon className="text-default-300" style={{ background: style.BgButton, color: style.P }}/>
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem key="view">Ver</DropdownItem>
-                <DropdownItem key="edit">Editar</DropdownItem>
-                <DropdownItem key="delete">Eliminar</DropdownItem>
+              <DropdownMenu style={{ background: style.BgCard }}>
+                <DropdownItem key="view" style={{ background: style.BgButton, color: style.P }}>Ver</DropdownItem>
+                <DropdownItem key="edit" style={{ background: style.BgButton, color: style.P }}>Editar</DropdownItem>
+                <DropdownItem key="delete" style={{ background: style.BgButton, color: style.P }}>Eliminar</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -319,6 +321,7 @@ export function Products() {
                 <Button
                   endContent={<ChevronDownIcon className="text-small" />}
                   variant="flat"
+                  style={{ background: style.BgButton, color: style.P }}
                 >
                   Estado
                 </Button>
@@ -343,6 +346,7 @@ export function Products() {
                 <Button
                   endContent={<ChevronDownIcon className="text-small" />}
                   variant="flat"
+                  style={{ background: style.BgButton, color: style.P }}
                 >
                   Columnas
                 </Button>
@@ -366,6 +370,7 @@ export function Products() {
               color="primary"
               endContent={<PlusIcon />}
               onPress={() => setIsModalOpen(true)}
+              style={{ background: style.BgButton, color: style.P }}
             >
               Añadir
             </Button>
@@ -375,15 +380,16 @@ export function Products() {
           <span className="text-default-400 text-small">
             Total {products.length} productos
           </span>
-          <label className="flex items-center text-default-400 text-small">
+          <label className="flex items-center text-default-400 text-small" style={{ color: style.H3 }}>
             Filas por página:
             <select
               className="bg-transparent outline-none text-default-400 text-small"
               onChange={onRowsPerPageChange}
+              style={{ color: style.H3 }}
             >
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">25</option>
+              <option value="10" style={{ color: style.P }}>10</option>
+              <option value="15" style={{ color: style.P }}>15</option>
+              <option value="20" style={{ color: style.P }}>25</option>
             </select>
           </label>
         </div>
@@ -402,16 +408,11 @@ export function Products() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "All items selected"
-            : `${selectedKeys.size} of ${filteredItems.length} selected`}
-        </span>
         <Pagination
           isCompact
           showControls
           showShadow
-          color="primary"
+          color="default"
           page={page}
           total={pages}
           onChange={setPage}
@@ -422,6 +423,7 @@ export function Products() {
             size="sm"
             variant="flat"
             onPress={onPreviousPage}
+            style={{ background: style.BgButton, color: style.P }}
           >
             Previous
           </Button>
@@ -430,6 +432,7 @@ export function Products() {
             size="sm"
             variant="flat"
             onPress={onNextPage}
+            style={{ background: style.BgButton, color: style.P }}
           >
             Next
           </Button>
@@ -442,13 +445,17 @@ export function Products() {
     <>
       <ModalP isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <Table
+        style={{
+          background: style.BgCard,
+          color: style.P,
+        }}
+        classNames={{
+          wrapper: "p-0 m-0", // Asegura que en Tailwind no haya
+        }}
         isHeaderSticky
-        aria-label="Example table with custom cells, pagination and sorting"
+        aria-label="Example table with custom cells, pagination y sorting"
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
-        classNames={{
-          wrapper: "h-auto",
-        }}
         selectedKeys={selectedKeys}
         sortDescriptor={sortDescriptor}
         topContent={topContent}
@@ -462,24 +469,21 @@ export function Products() {
               key={column.uid}
               align={column.uid === "actions" ? "center" : "start"}
               allowsSorting={column.sortable}
+              style={{ background: style.BgButton, color: style.P }}
             >
               {column.name}
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody
-          emptyContent={"No se encontraron usuarios"}
-          items={sortedItems}
-        >
+        <TableBody emptyContent={"No se encontraron usuarios"} items={sortedItems}>
           {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
+            <TableRow key={item.id} style={{ color: style.H3 }}>
+              {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
             </TableRow>
           )}
         </TableBody>
       </Table>
     </>
   );
+  
 }

@@ -15,7 +15,6 @@ import {
   Chip,
   User,
   Pagination,
-  Card,
 } from "@heroui/react";
 import { ModalU } from "../../components/modalU";
 import { users } from "../../json/users";
@@ -432,16 +431,11 @@ export function Users() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400" style={{ color: style.H3 }}>
-          {selectedKeys === "all"
-            ? "All items selected"
-            : `${selectedKeys.size} of ${filteredItems.length} selected`}
-        </span>
         <Pagination
           isCompact
           showControls
           showShadow
-          color="primary"
+          color="default"
           page={page}
           total={pages}
           onChange={setPage}

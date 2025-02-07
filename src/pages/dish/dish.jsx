@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { ModalD } from "../../components/modalD";
+import React, { useState, useContext } from "react";
 import {
   Table,
   TableHeader,
@@ -17,7 +16,10 @@ import {
   User,
   Pagination,
 } from "@heroui/react";
+import { ModalD } from "../../components/modalD";
 import { menus } from "../../json/menus";
+import { StyleContext } from "../../core/StyleContext";
+
 
 export const columns = [
   { name: "ID", uid: "menu_id", sortable: true },
@@ -142,10 +144,10 @@ const statusColorMap = {
   inactivo: "danger",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "totalDishes","status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["name", "totalDishes", "status", "actions"];
 
 export function Dish() {
-  // Agregar estado para controlar la apertura del modal
+  const { style } = useContext(StyleContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -319,6 +321,7 @@ export function Dish() {
                 <Button
                   endContent={<ChevronDownIcon className="text-small" />}
                   variant="flat"
+                  style={{ background: style.BgButton, color: style.P }}
                 >
                   Estado
                 </Button>
@@ -343,6 +346,7 @@ export function Dish() {
                 <Button
                   endContent={<ChevronDownIcon className="text-small" />}
                   variant="flat"
+                  style={{ background: style.BgButton, color: style.P }}
                 >
                   Columnas
                 </Button>
@@ -366,24 +370,26 @@ export function Dish() {
               color="primary"
               endContent={<PlusIcon />}
               onPress={() => setIsModalOpen(true)}
+              style={{ background: style.BgButton, color: style.P }}
             >
               Añadir
             </Button>
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
+          <span className="text-default-400 text-small" style={{ color: style.H3 }}>
             Total {menus.length} usuarios
           </span>
-          <label className="flex items-center text-default-400 text-small">
+          <label className="flex items-center text-default-400 text-small" style={{ color: style.H3 }}>
             Filas por página:
             <select
               className="bg-transparent outline-none text-default-400 text-small"
               onChange={onRowsPerPageChange}
+              style={{ color: style.H3 }}
             >
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">25</option>
+              <option value="15" style={{ color: style.P }}>15</option>
+              <option value="20" style={{ color: style.P }}>25</option>
+              <option value="10" style={{ color: style.P }}>10</option>
             </select>
           </label>
         </div>
@@ -402,16 +408,11 @@ export function Dish() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "All items selected"
-            : `${selectedKeys.size} of ${filteredItems.length} selected`}
-        </span>
         <Pagination
           isCompact
           showControls
           showShadow
-          color="primary"
+          color="default"
           page={page}
           total={pages}
           onChange={setPage}
@@ -422,6 +423,7 @@ export function Dish() {
             size="sm"
             variant="flat"
             onPress={onPreviousPage}
+            style={{ background: style.BgButton, color: style.P }}
           >
             Previous
           </Button>
@@ -430,6 +432,7 @@ export function Dish() {
             size="sm"
             variant="flat"
             onPress={onNextPage}
+            style={{ background: style.BgButton, color: style.P }}
           >
             Next
           </Button>
@@ -443,12 +446,16 @@ export function Dish() {
       {/* Modal con estado controlado */}
       <ModalD isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <Table
+      style={{
+        background: style.BgCard,
+        color: style.P,
+      }}
         isHeaderSticky
         aria-label="Example table with custom cells, pagination and sorting"
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{
-          wrapper: "h-auto",
+          wrapper: "p-0 m-0", // Asegura que en Tailwind no haya
         }}
         selectedKeys={selectedKeys}
         sortDescriptor={sortDescriptor}
@@ -463,6 +470,7 @@ export function Dish() {
               key={column.uid}
               align={column.uid === "actions" ? "center" : "start"}
               allowsSorting={column.sortable}
+              style={{ background: style.BgButton, color: style.P }}
             >
               {column.name}
             </TableColumn>
@@ -473,7 +481,7 @@ export function Dish() {
           items={sortedItems}
         >
           {(item) => (
-            <TableRow key={item.id}>
+            <TableRow key={item.id} style={{ color: style.H3 }}>
               {(columnKey) => (
                 <TableCell>{renderCell(item, columnKey)}</TableCell>
               )}
