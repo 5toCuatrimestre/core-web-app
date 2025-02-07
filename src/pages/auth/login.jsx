@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Checkbox, Form, Input } from "antd";
+import { Button } from "@heroui/react";
 import { StyleContext } from "../../core/StyleContext";
 import Strings from "../../utils/localizations/Strings";
 
@@ -80,8 +81,9 @@ export function Login() {
           </div>
         </Form.Item>
 
-        <Form.Item>
+        <Form.Item className="justify-items-center w-full">
           <Button
+            className="w"
             block
             type="primary"
             htmlType="submit"
