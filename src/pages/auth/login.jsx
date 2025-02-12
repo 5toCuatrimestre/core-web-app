@@ -1,16 +1,18 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Checkbox, Form, Input } from "antd";
 import { Button } from "@heroui/react";
 import { StyleContext } from "../../core/StyleContext";
 import Strings from "../../utils/localizations/Strings";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 
 export function Login() {
   const navigate = useNavigate();
-  const { style } = useContext(StyleContext); // Accede al estilo global
+  const { style } = useContext(StyleContext);
 
-  const onFinish = (values) => {
+  const onFinish = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const values = Object.fromEntries(formData.entries());
     console.log("Received values of form: ", values);
     navigate("/statistic");
   };
@@ -20,79 +22,67 @@ export function Login() {
       className="flex items-center justify-center h-screen"
       style={{ backgroundColor: style.BgInterface }}
     >
-      <Form
-        className="w-96 shadow-2xl rounded-2xl p-4 pt-8"
-        name={Strings.login}
-        initialValues={{
-          remember: true,
-        }}
-        style={{
-          maxWidth: 360,
-          backgroundColor: style.BgCard,
-          color: "#ffffff",
-        }}
-        onFinish={onFinish}
+      <form
+        onSubmit={onFinish}
+        className="w-96 shadow-2xl rounded-2xl p-6"
+        style={{ backgroundColor: style.BgCard, color: style.H1 }}
       >
-        <Form.Item
-          name={Strings.email}
-          rules={[
-            {
-              required: true,
-              message: "Please input your Email!",
-            },
-          ]}
-        >
-          <Input
-            prefix={
-              <UserOutlined style={{ color: style.lightBackgroundColor }} />
-            }
-            placeholder={Strings.email}
-            style={{ backgroundColor: style.BgInterface, color: style.H3 }}
-          />
-        </Form.Item>
+        <h2 className="text-xl font-bold mb-4" style={{ color: style.H2 }}>
+          {Strings.login}
+        </h2>
 
-        <Form.Item
-          name={Strings.password}
-          rules={[
-            {
-              required: true,
-              message: "Please input your Password!",
-            },
-          ]}
-        >
-          <Input
-            prefix={
-              <LockOutlined style={{ color: style.lightBackgroundColor }} />
-            }
-            type={Strings.password}
-            placeholder={Strings.password}
-            style={{ backgroundColor: style.BgInterface, color: style.H3 }}
-          />
-        </Form.Item>
-
-        <Form.Item>
-          <div className="flex justify-between items-center">
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox style={{ color: style.H3 }}>Remember me</Checkbox>
-            </Form.Item>
-            <a href="" style={{ color: style.H3 }}>
-              Forgot password
-            </a>
+        <div className="mb-4">
+          <label className="block mb-1 text-sm" style={{ color: style.H3 }}>
+            {Strings.email}
+          </label>
+          <div className="flex items-center bg-opacity-10 rounded-md p-2" style={{ backgroundColor: style.BgInterface }}>
+            <UserOutlined className="text-gray-400 mr-2" />
+            <input
+              type="email"
+              name={Strings.email}
+              placeholder={Strings.email}
+              required
+              className="w-full bg-transparent outline-none text-sm"
+              style={{ color: style.H3 }}
+            />
           </div>
-        </Form.Item>
+        </div>
 
-        <Form.Item className="justify-items-center w-full">
-          <Button
-            className="w"
-            block
-            type="primary"
-            htmlType="submit"
-            style={{ background: style.BgButton, color: style.P }}
-          >
-            Log in
-          </Button>
-        </Form.Item>
-      </Form>
+        <div className="mb-4">
+          <label className="block mb-1 text-sm" style={{ color: style.H3 }}>
+            {Strings.password}
+          </label>
+          <div className="flex items-center bg-opacity-10 rounded-md p-2" style={{ backgroundColor: style.BgInterface }}>
+            <LockOutlined className="text-gray-400 mr-2" />
+            <input
+              type="password"
+              name={Strings.password}
+              placeholder={Strings.password}
+              required
+              className="w-full bg-transparent outline-none text-sm"
+              style={{ color: style.H3 }}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center text-sm mb-4">
+          <label className="flex items-center" style={{ color: style.H3 }}>
+            <input type="checkbox" name="remember" className="mr-2" />
+            Remember me
+          </label>
+          <a href="#" className="text-sm" style={{ color: style.H3 }}>
+            Forgot password?
+          </a>
+        </div>
+
+        <Button
+          type="submit"
+          className="w-full py-2 rounded-md"
+          style={{ background: style.BgButton, color: style.P }}
+        >
+          Log in
+        </Button>
+      </form>
     </div>
   );
 }
