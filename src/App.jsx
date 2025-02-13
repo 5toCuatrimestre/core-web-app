@@ -6,6 +6,7 @@ import { Users } from "./pages/user/users";
 import { Statistics } from "./pages/statistics/statistics";
 import { Products } from "./pages/products/products";
 import { Dish } from "./pages/dish/dish";
+import QuizApp from "./pages/QuizApp";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         {/* Rutas públicas */}
         <Route index path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
+ 
 
         {/* Rutas protegidas */}
         {isLoggedIn && (
@@ -26,6 +28,7 @@ function App() {
             <Route path="/statistic" element={<Statistics />} />
             <Route path="/product" element={<Products/>} />
             <Route path="/dish" element={<Dish/>} />
+            <Route path="/qp" element={<QuizApp />} />
           </Route>
         )}
 
