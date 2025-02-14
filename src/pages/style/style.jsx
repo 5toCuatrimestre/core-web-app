@@ -4,18 +4,22 @@ import { StyleContext } from "../../core/StyleContext";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { Button } from "@heroui/react";
 import { Checkbox } from "@heroui/checkbox";
+import { UsersPreview } from "./usersPreview";
+
+// Ejemplo de ícono, si deseas alguno para header o similar
+// import { FaUserCircle } from "react-icons/fa";
 
 export function Style() {
   const { handleColorChange: updateGlobalStyle } = useContext(StyleContext);
   const { style } = useContext(StyleContext);
 
-  // 🎨 Definir tres temas predefinidos
+  // 🎨 Tres temas predefinidos
   const themes = [
     {
       H1: "#ffffff",
       H2: "#cccccc",
       H3: "#aaaaaa",
-      P: "000000",
+      P: "#000000",
       BgCard: "#222222",
       BgInterface: "#111111",
       BgButton: "#c7c7c7",
@@ -47,10 +51,10 @@ export function Style() {
   const colorLabels = {
     H1: "Encabezado 1",
     H2: "Encabezado 2",
-    H3: "Encabezado 3",
-    P: "Texto",
-    BgCard: "Tarjeta",
-    BgInterface: "Interfaz",
+    H3: "Texto principal",
+    P: "Texto botón",
+    BgCard: "Fondo tarjeta",
+    BgInterface: "Fondo interfaz",
     BgButton: "Botón",
   };
 
@@ -62,121 +66,141 @@ export function Style() {
   // Guardar cambios en el contexto global
   const handleSaveChanges = () => {
     updateGlobalStyle(colors);
+    console.log("Cambios de colores guardados");
   };
 
-  // Manejar selección de un tema (Solo se permite uno a la vez)
+  // Manejar selección de un tema (solo uno a la vez)
   const handleThemeSelection = (index) => {
-    if (selectedThemeIndex === index) return; // Si ya está seleccionado, no hacer nada
+    if (selectedThemeIndex === index) return; // No hacer nada si ya está seleccionado
     setSelectedThemeIndex(index);
-    setColors(themes[index]); // Aplica el tema seleccionado a los ColorPickers
+    setColors(themes[index]);
   };
 
   return (
-    <div className="h-full max-w-8xl grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
+    <div
+      className="w-full h-full grid grid-cols-1 md:grid-cols-[2fr_4fr_1fr] gap-4"
+      style={{ backgroundColor: style.BgInterface }}
+    >
+      {/* PRIMERA COLUMNA (2fr): Temas predefinidos */}
       <Card
-        className="shadow-lg p-6 flex flex-col col-span-2 overflow-y-hidden"
+        className="shadow-lg flex flex-col"
         style={{ background: style.BgCard }}
       >
-        <CardHeader>
-          <h1 className="text-xl font-bold" style={{ color: style.H2 }}>
-            Selecciona los colores
+        <CardHeader className="flex flex-col items-start text-left space-y-2">
+          <h1 className="text-lg font-bold" style={{ color: style.H2 }}>
+            Temas predefinidos
           </h1>
+          <p className="text-sm" style={{ color: style.H3 }}>
+            Selecciona uno para aplicarlo
+          </p>
+        </CardHeader>
+
+        <CardBody className="flex flex-col gap-4">
+          {themes.map((previewColors, index) => (
+            <div
+              key={index}
+              className="p-4 rounded-xl relative flex items-center justify-center cursor-pointer"
+              style={{ backgroundColor: previewColors.BgInterface }}
+              onClick={() => handleThemeSelection(index)}
+            >
+              <div
+                className="p-2 rounded-lg w-full text-left"
+                style={{ backgroundColor: previewColors.BgCard }}
+              >
+                <h2
+                  className="text-base font-bold"
+                  style={{ color: previewColors.H1 }}
+                >
+                  {colorLabels.H1}
+                </h2>
+                <p className="text-sm" style={{ color: previewColors.H2 }}>
+                  {colorLabels.H2}
+                </p>
+                <p className="text-xs" style={{ color: previewColors.H3 }}>
+                  {colorLabels.H3}
+                </p>
+                <Button
+                  className="mt-2"
+                  style={{
+                    background: previewColors.BgButton,
+                    color: previewColors.P,
+                  }}
+                >
+                  {colorLabels.BgButton}
+                </Button>
+              </div>
+              {/* Checkbox */}
+              <Checkbox
+                isSelected={selectedThemeIndex === index}
+                className="absolute top-2 right-2 z-20 bg-white rounded-lg shadow-md"
+                onChange={() => handleThemeSelection(index)}
+              />
+            </div>
+          ))}
+        </CardBody>
+      </Card>
+
+      {/* SEGUNDA COLUMNA (4fr): Vista Previa (la más grande) */}
+      <Card
+        className="shadow-lg flex flex-col"
+        style={{ background: style.BgCard }}
+      >
+        <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center">
+          <div>
+            <h1 className="text-xl font-bold" style={{ color: style.H2 }}>
+              Vista Previa
+            </h1>
+            <p className="text-sm" style={{ color: style.H3 }}>
+              Observa los resultados aquí
+            </p>
+          </div>
           <Button
             onPress={handleSaveChanges}
             style={{ background: style.BgButton, color: style.P }}
-            className="absolute top-4 right-4"
+            className="mt-2 md:mt-0"
           >
             Guardar Cambios
           </Button>
         </CardHeader>
-        <CardBody className="flex flex-col gap-6">
-          {/* Fila de ColorPickers */}
-          <div className="flex flex-wrap gap-6 justify-center">
-            {Object.entries(colors).map(([key, value]) => (
-              <div key={key} className="flex flex-col items-center text-xs">
-                <h3 className="capitalize text-lg" style={{ color: style.H3 }}>
-                  {colorLabels[key]}
-                </h3>
-                <ColorPicker
-                  value={value}
-                  onChange={(color) => handleColorChange(key, color)}
-                  className="w-6 h-6 mt-1"
-                />
-              </div>
-            ))}
-          </div>
 
-          {/* Preview de la configuración actual */}
-          <div
-            className="p-4 rounded-lg flex items-center justify-center w-full max-w-lg mx-auto mb-10"
-            style={{ backgroundColor: colors.BgInterface }}
-          >
-            <div
-              className="p-2 rounded-xl w-full text-left"
-              style={{ backgroundColor: colors.BgCard }}
-            >
-              <h1 className="text-xl" style={{ color: colors.H1 }}>
-                {colorLabels.H1}
-              </h1>
-              <h2 className="text-lg" style={{ color: colors.H2 }}>
-                {colorLabels.H2}
-              </h2>
-              <h3 className="text-sm" style={{ color: colors.H3 }}>
-                {colorLabels.H3}
+        {/* CardBody con 2 filas y 2 columnas */}
+        <CardBody className="p-10">
+          <div className="overflow-hidden">
+            <UsersPreview style={colors}/>
+          </div>
+        </CardBody>
+      </Card>
+
+      {/* TERCERA COLUMNA (1fr): Ajuste manual de colores (color pickers) */}
+      <Card
+        className="shadow-lg flex flex-col"
+        style={{ background: style.BgCard }}
+      >
+        <CardHeader className="flex flex-col items-start text-left space-y-2">
+          <h1 className="text-lg font-bold" style={{ color: style.H2 }}>
+            Ajuste Manual
+          </h1>
+          <p className="text-sm" style={{ color: style.H3 }}>
+            Modifica cada color
+          </p>
+        </CardHeader>
+
+        <CardBody className="flex flex-wrap gap-4 justify-center">
+          {Object.entries(colors).map(([key, value]) => (
+            <div key={key} className="flex flex-col items-center text-center">
+              <h3
+                className="mb-1 text-sm font-medium capitalize"
+                style={{ color: style.H3 }}
+              >
+                {colorLabels[key]}
               </h3>
-              <Button
-                className="mt-2"
-                style={{ background: colors.BgButton, color: colors.P }}
-              >
-                {colorLabels.BgButton}
-              </Button>
+              <ColorPicker
+                value={value}
+                onChange={(color) => handleColorChange(key, color)}
+                className="w-6 h-6"
+              />
             </div>
-          </div>
-
-          {/* Tres previews de diseño con temas predefinidos */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {themes.map((previewColors, index) => (
-              <div
-                key={index}
-                className="p-4 rounded-xl relative flex items-center justify-center w-full max-w-lg mx-auto cursor-pointer"
-                style={{ backgroundColor: previewColors.BgInterface }}
-                onClick={() => handleThemeSelection(index)}
-              >
-                <div
-                  className="p-2 rounded-lg w-full text-left"
-                  style={{ backgroundColor: previewColors.BgCard }}
-                >
-                  <h1
-                    className="text-xl font-bold"
-                    style={{ color: previewColors.H1 }}
-                  >
-                    {colorLabels.H1}
-                  </h1>
-                  <h2 className="text-lg" style={{ color: previewColors.H2 }}>
-                    {colorLabels.H2}
-                  </h2>
-                  <h3 className="text-sm" style={{ color: previewColors.H3 }}>
-                    {colorLabels.H3}
-                  </h3>
-                  <Button
-                    className="mt-2"
-                    style={{
-                      background: previewColors.BgButton,
-                      color: previewColors.P,
-                    }}
-                  >
-                    {colorLabels.BgButton}
-                  </Button>
-                </div>
-                {/* Checkbox en la esquina superior derecha */}
-                <Checkbox
-                  isSelected={selectedThemeIndex === index} // ✅ Esta es la forma correcta
-                  className="absolute top-2 right-2 z-20 bg-white rounded-lg shadow-md"
-                  onChange={() => handleThemeSelection(index)}
-                />
-              </div>
-            ))}
-          </div>
+          ))}
         </CardBody>
       </Card>
     </div>

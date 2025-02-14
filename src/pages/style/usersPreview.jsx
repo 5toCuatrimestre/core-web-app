@@ -153,8 +153,9 @@ const INITIAL_VISIBLE_COLUMNS = [
   "actions",
 ];
 
-export function Users() {
-  const { style } = useContext(StyleContext);
+export function UsersPreview({ style }) {
+  console.log(style);
+  
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));

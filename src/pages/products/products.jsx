@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import {
   Table,
   TableHeader,
@@ -21,18 +21,18 @@ import { products } from "../../json/products";
 import { StyleContext } from "../../core/StyleContext";
 
 export const columns = [
-  { name: "ID", uid: "productId", sortable: true },
+  { name: "ID", uid: "product_id", sortable: true },
   { name: "NOMBRE", uid: "name", sortable: true },
   { name: "DESCRIPCIÓN", uid: "description" },
   { name: "PRECIO", uid: "price", sortable: true },
   { name: "ESTADO", uid: "status", sortable: true },
-  { name: "CREADO EN", uid: "createdAt", sortable: true },
+  { name: "CREADO EN", uid: "created_at", sortable: true },
   { name: "ACCIONES", uid: "actions" },
 ];
 
 export const statusOptions = [
-  { name: "Activo", uid: "active" },
-  { name: "Inactivo", uid: "inactive" },
+  { name: "Activo", uid: "activo" },
+  { name: "Inactivo", uid: "inactivo" },
 ];
 
 export function capitalize(s) {
@@ -144,10 +144,16 @@ const statusColorMap = {
   inactivo: "danger",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "name",
+  "description",
+  "price",
+  "status",
+  "actions",
+];
 
 export function Products() {
-    const { style } = useContext(StyleContext);
+  const { style } = useContext(StyleContext);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -254,14 +260,31 @@ export function Products() {
           <div className="relative flex justify-end items-center gap-2">
             <Dropdown>
               <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light" style={{ background: style.BgButton, color: style.P }}>
-                  <VerticalDotsIcon className="text-default-300" style={{ background: style.BgButton, color: style.P }}/>
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="light"
+                  style={{ background: style.BgButton, color: style.P }}
+                >
+                  <VerticalDotsIcon
+                    className="text-default-300"
+                    style={{ background: style.BgButton, color: style.P }}
+                  />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu style={{ background: style.BgCard }}>
-                <DropdownItem key="view" style={{ background: style.BgButton, color: style.P }}>Ver</DropdownItem>
-                <DropdownItem key="edit" style={{ background: style.BgButton, color: style.P }}>Editar</DropdownItem>
-                <DropdownItem key="delete" style={{ background: style.BgButton, color: style.P }}>Eliminar</DropdownItem>
+                <DropdownItem
+                  key="edit"
+                  style={{ background: style.BgButton, color: style.P }}
+                >
+                  Editar
+                </DropdownItem>
+                <DropdownItem
+                  key="delete"
+                  style={{ background: style.BgButton, color: style.P }}
+                >
+                  Eliminar
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -348,7 +371,7 @@ export function Products() {
                   variant="flat"
                   style={{ background: style.BgButton, color: style.P }}
                 >
-                  Columnas
+                  Filtrar columnas
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
@@ -377,19 +400,31 @@ export function Products() {
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
+          <span
+            className="text-default-400 text-small"
+            style={{ color: style.H3 }}
+          >
             Total {products.length} productos
           </span>
-          <label className="flex items-center text-default-400 text-small" style={{ color: style.H3 }}>
+          <label
+            className="flex items-center text-default-400 text-small"
+            style={{ color: style.H3 }}
+          >
             Filas por página:
             <select
               className="bg-transparent outline-none text-default-400 text-small"
               onChange={onRowsPerPageChange}
               style={{ color: style.H3 }}
             >
-              <option value="10" style={{ color: style.P }}>10</option>
-              <option value="15" style={{ color: style.P }}>15</option>
-              <option value="20" style={{ color: style.P }}>25</option>
+              <option value="10" style={{ color: style.P }}>
+                10
+              </option>
+              <option value="15" style={{ color: style.P }}>
+                15
+              </option>
+              <option value="20" style={{ color: style.P }}>
+                25
+              </option>
             </select>
           </label>
         </div>
@@ -425,7 +460,7 @@ export function Products() {
             onPress={onPreviousPage}
             style={{ background: style.BgButton, color: style.P }}
           >
-            Previous
+            Anterior
           </Button>
           <Button
             isDisabled={pages === 1}
@@ -434,7 +469,7 @@ export function Products() {
             onPress={onNextPage}
             style={{ background: style.BgButton, color: style.P }}
           >
-            Next
+            Siguiente
           </Button>
         </div>
       </div>
@@ -475,15 +510,19 @@ export function Products() {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"No se encontraron usuarios"} items={sortedItems}>
+        <TableBody
+          emptyContent={"No se encontraron usuarios"}
+          items={sortedItems}
+        >
           {(item) => (
             <TableRow key={item.id} style={{ color: style.H3 }}>
-              {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+              {(columnKey) => (
+                <TableCell>{renderCell(item, columnKey)}</TableCell>
+              )}
             </TableRow>
           )}
         </TableBody>
       </Table>
     </>
   );
-  
 }
