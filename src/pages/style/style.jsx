@@ -2,14 +2,34 @@ import React, { useState, useContext } from "react";
 import { ColorPicker } from "antd";
 import { StyleContext } from "../../core/StyleContext";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
-import { Button } from "@heroui/react";
 import { Checkbox } from "@heroui/checkbox";
-import { UsersPreview } from "./usersPreview";
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Button,
+} from "@heroui/react";
+import { users } from "../../json/users";
 
 // Ejemplo de ícono, si deseas alguno para header o similar
 // import { FaUserCircle } from "react-icons/fa";
 
 export function Style() {
+  // Datos y columnas estáticas para la vista previa
+  const previewColumns = [
+    { name: "ID", uid: "user_id" },
+    { name: "NOMBRE", uid: "name" },
+    { name: "TELÉFONO", uid: "phone_number" },
+    { name: "ROL", uid: "role" },
+    { name: "ESTADO", uid: "status" },
+    { name: "CREADO EN", uid: "created_at" },
+    { name: "ACCIONES", uid: "actions" },
+  ];
+  // Solo usamos los primeros 3 usuarios para la vista previa
+  const previewUsers = users.slice(0, 3);
   const { handleColorChange: updateGlobalStyle } = useContext(StyleContext);
   const { style } = useContext(StyleContext);
 
@@ -27,7 +47,7 @@ export function Style() {
     {
       H1: "#000000",
       H2: "#333333",
-      H3: "#555555",
+      H3: "#000000",
       P: "#ffffff",
       BgCard: "#f0f0f0",
       BgInterface: "#ffffff",
@@ -49,8 +69,8 @@ export function Style() {
 
   // Etiquetas de colores
   const colorLabels = {
-    H1: "Encabezado 1",
-    H2: "Encabezado 2",
+    H1: "Título 1",
+    H2: "Título 2",
     H3: "Texto principal",
     P: "Texto botón",
     BgCard: "Fondo tarjeta",
@@ -88,7 +108,7 @@ export function Style() {
       >
         <CardHeader className="flex flex-col items-start text-left space-y-2">
           <h1 className="text-lg font-bold" style={{ color: style.H2 }}>
-            Temas predefinidos
+            Temas anteriores
           </h1>
           <p className="text-sm" style={{ color: style.H3 }}>
             Selecciona uno para aplicarlo
@@ -154,21 +174,94 @@ export function Style() {
               Observa los resultados aquí
             </p>
           </div>
-          <Button
-            onPress={handleSaveChanges}
-            style={{ background: style.BgButton, color: style.P }}
-            className="mt-2 md:mt-0"
-          >
-            Guardar Cambios
-          </Button>
         </CardHeader>
 
         {/* CardBody con 2 filas y 2 columnas */}
         <CardBody className="p-10">
           <div className="overflow-hidden">
-            <UsersPreview style={colors}/>
+            <Card style={{ background: colors.BgInterface, padding: "1rem" }}>
+              {/* Forzamos el remount de la tabla usando JSON.stringify(colors) como key */}
+              <div
+                className="text-xl font-bold"
+                style={{
+                  color: colors.H1,
+                }}
+              >
+                Titulo 1
+              </div>
+              <div
+                className="text-lg font-medium mb-5"
+                style={{
+                  color: colors.H2,
+                }}
+              >
+                Titulo 2
+              </div>
+              <div key={JSON.stringify(colors)}>
+                <Table
+                  style={{
+                    background: colors.BgCard,
+                    color: colors.P,
+                  }}
+                  classNames={{ wrapper: "p-0 m-0" }}
+                  aria-label="Diseño de tabla"
+                >
+                  <TableHeader columns={previewColumns}>
+                    {(column) => (
+                      <TableColumn
+                        key={column.uid}
+                        align={column.uid === "actions" ? "center" : "start"}
+                        style={{
+                          background: colors.BgButton,
+                          color: colors.P,
+                        }}
+                      >
+                        {column.name}
+                      </TableColumn>
+                    )}
+                  </TableHeader>
+                  <TableBody
+                    items={previewUsers}
+                    emptyContent="No hay usuarios"
+                  >
+                    {(item) => (
+                      <TableRow key={item.id} style={{ color: colors.H3 }}>
+                        {(columnKey) => (
+                          <TableCell>
+                            {columnKey === "actions" ? (
+                              <div
+                                style={{
+                                  background: colors.BgButton,
+                                  color: colors.P,
+                                  padding: "4px 8px",
+                                  borderRadius: "4px",
+                                  textAlign: "center",
+                                }}
+                              >
+                                Acciones
+                              </div>
+                            ) : (
+                              item[columnKey] || ""
+                            )}
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </Card>
           </div>
         </CardBody>
+        <CardFooter>
+          <Button
+            onPress={handleSaveChanges}
+            style={{ background: style.BgButton, color: style.P }}
+            className="w-full mt-2 md:mt-0"
+          >
+            Guardar Cambios
+          </Button>
+        </CardFooter>
       </Card>
 
       {/* TERCERA COLUMNA (1fr): Ajuste manual de colores (color pickers) */}
