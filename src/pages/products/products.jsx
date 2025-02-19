@@ -27,6 +27,7 @@ export const columns = [
   { name: "PRECIO", uid: "price", sortable: true },
   { name: "ESTADO", uid: "status", sortable: true },
   { name: "CREADO EN", uid: "created_at", sortable: true },
+  { name: "IMÁGENES", uid: "images", sortable: true },
   { name: "ACCIONES", uid: "actions" },
 ];
 
@@ -149,6 +150,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "description",
   "price",
   "status",
+  "images",
   "actions",
 ];
 
@@ -255,6 +257,20 @@ export function Products() {
             {cellValue}
           </Chip>
         );
+      case "images":
+        return (
+          <div className="flex gap-2 overflow-x-auto overflow-y-hidden h-16 py-1 scrollbar-hide">
+            {(product.images || []).map((image) => (
+              <img
+                key={image.id}
+                src={image.url}
+                alt={`${product.name} imagen ${image.id}`}
+                className="w-16 h-16 object-contain rounded"
+              />
+            ))}
+          </div>
+        );
+
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">

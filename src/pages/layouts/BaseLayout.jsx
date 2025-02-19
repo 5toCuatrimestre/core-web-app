@@ -1,14 +1,21 @@
 import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "antd";
 import { Sidebar } from "../../components/sidebar";
 import { Outlet } from "react-router-dom";
 import { StyleContext } from "../../core/StyleContext";
+import { Button } from "@heroui/react";
+import { ModalL } from "../../components/modalL";
 
 const { Sider, Content } = Layout;
 
 export function BaseLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState(null); // Estado global para la foto de perfil
   const { style } = useContext(StyleContext);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -16,19 +23,61 @@ export function BaseLayout() {
 
   return (
     <Layout className="h-screen overflow-hidden">
-      {/* Sider con tamaño dinámico */}
       <Sider
         width={isSidebarOpen ? 192 : 64}
         className="transition-transform duration-300 ease-in-out overflow-hidden flex will-change-transform"
         style={{ transform: `translateX(0)` }}
       >
-        {/* Pasamos el estado y función de toggle al Sidebar */}
-        <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          togglePopover={() => setIsPopoverOpen((prev) => !prev)}
+          openModal={() => setIsModalOpen(true)}
+          profilePhoto={profilePhoto} // Pasamos la foto de perfil
+        />
       </Sider>
-      {/* Contenido principal */}
-      <Content className="p-4 overflow-auto h-full" style={{background:style.BgInterface}}>
+
+      <Content
+        className="p-4 overflow-auto h-full"
+        style={{ background: style.BgInterface }}
+      >
         <Outlet />
+
+        {isPopoverOpen && (
+          <div
+            className={`fixed bottom-1 left-14 rounded-lg border-1 shadow-md p-2 z-50 gap-2 flex flex-col backdrop-blur-md
+      transition-all duration-300 ease-in-out transform ${isPopoverOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+            style={{
+              background: `${style.BgCard}80`,
+              borderColor: style.BgButton,
+            }}
+          >
+            <Button
+              className="text-left hover:opacity-75 rounded px-4 py-2"
+              style={{ background: style.BgButton, color: style.text }}
+              onClick={() => navigate("/")}
+            >
+              Cerrar sesión
+            </Button>
+            <Button
+              className="text-left hover:opacity-75 rounded px-4 py-2"
+              style={{ background: style.BgButton, color: style.text }}
+              onClick={() => setIsModalOpen(true)}
+            >
+              Modificar logo
+            </Button>
+          </div>
+        )}
+
+        {/* Modal para modificar logo */}
+        <ModalL
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          setProfilePhoto={setProfilePhoto}
+        />
       </Content>
     </Layout>
   );
 }
+
+export default BaseLayout;
