@@ -13,6 +13,18 @@ export const products = [
       { id: 4, url: "https://espanol.kingsford.com/wp-content/uploads/2017/02/KFD_SpicyBBQBaconRanchBurger35382_WEB.jpg" },
       { id: 5, url: "https://cloudfront-us-east-1.images.arcpublishing.com/infobae/24P2OKC3RVEHRD3F2VKQ76XX7M.jpg" },
       { id: 6, url: "https://cloudfront-us-east-1.images.arcpublishing.com/infobae/24P2OKC3RVEHRD3F2VKQ76XX7M.jpg" } 
+    ],
+    categories: [
+      { id: 1, name: "Comida Rápida" },
+      { id: 2, name: "Carnes" },
+      { id: 3, name: "Platos Principales" },
+      { id: 4, name: "Comida Rápida" },
+      { id: 5, name: "Carnes" },
+      { id: 6, name: "Platos Principales" },
+      { id: 7, name: "Platos Principales" },
+      { id: 8, name: "Comida Rápida" },
+      { id: 9, name: "Carnes" },
+      { id: 10, name: "Platos Principales" }
     ]
   },
   {
@@ -29,6 +41,11 @@ export const products = [
       { id: 4, url: "https://espanol.kingsford.com/wp-content/uploads/2017/02/KFD_SpicyBBQBaconRanchBurger35382_WEB.jpg" },
       { id: 5, url: "https://cloudfront-us-east-1.images.arcpublishing.com/infobae/24P2OKC3RVEHRD3F2VKQ76XX7M.jpg" },
       { id: 6, url: "https://cloudfront-us-east-1.images.arcpublishing.com/infobae/24P2OKC3RVEHRD3F2VKQ76XX7M.jpg" } 
+    ],
+    categories:[
+      { id: 1, name: "Comida Rápida" },
+      { id: 4, name: "Pizzas" },
+      { id: 3, name: "Platos Principales" }
     ]
   },
   {
@@ -45,6 +62,11 @@ export const products = [
       { id: 4, url: "https://espanol.kingsford.com/wp-content/uploads/2017/02/KFD_SpicyBBQBaconRanchBurger35382_WEB.jpg" },
       { id: 5, url: "https://cloudfront-us-east-1.images.arcpublishing.com/infobae/24P2OKC3RVEHRD3F2VKQ76XX7M.jpg" },
       { id: 6, url: "https://cloudfront-us-east-1.images.arcpublishing.com/infobae/24P2OKC3RVEHRD3F2VKQ76XX7M.jpg" } 
+    ],
+    categories:[
+      { id: 1, name: "Comida Rápida" },
+      { id: 5, name: "Tacos" },
+      { id: 3, name: "Platos Principales" }
     ]
   },
   {

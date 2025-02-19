@@ -28,6 +28,7 @@ export const columns = [
   { name: "ESTADO", uid: "status", sortable: true },
   { name: "CREADO EN", uid: "created_at", sortable: true },
   { name: "IMÁGENES", uid: "images", sortable: true },
+  { name: "CATEGORIAS", uid: "categories", sortable: true },
   { name: "ACCIONES", uid: "actions" },
 ];
 
@@ -151,6 +152,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "price",
   "status",
   "images",
+  "categories",
   "actions",
 ];
 
@@ -257,19 +259,43 @@ export function Products() {
             {cellValue}
           </Chip>
         );
-      case "images":
-        return (
-          <div className="flex gap-2 overflow-x-auto overflow-y-hidden h-16 py-1 scrollbar-hide">
-            {(product.images || []).map((image) => (
-              <img
-                key={image.id}
-                src={image.url}
-                alt={`${product.name} imagen ${image.id}`}
-                className="w-16 h-16 object-contain rounded"
-              />
-            ))}
-          </div>
-        );
+        case "images":
+          return (
+            <div className="max-w-[250px] h-20 overflow-x-auto overflow-y-hidden py-1 scrollbar-hide flex items-center">
+              <div className="flex gap-2 flex-nowrap">
+                {(product.images || []).map((image) => (
+                  <div key={image.id} className="relative flex-shrink-0 w-16 h-16">
+                    <img
+                      src={image.url}
+                      alt={`${product.name} imagen ${image.id}`}
+                      className="w-full h-full object-cover rounded-lg shadow-md"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        
+
+          case "categories":
+  return (
+    <div className="max-w-[250px] h-auto overflow-x-auto overflow-y-hidden py-1 scrollbar-hide flex items-center">
+      <div className="grid grid-flow-col auto-cols-max grid-rows-2 gap-1">
+        {(product.categories || []).map((category) => (
+          <Chip
+            key={category.id}
+            size="sm"
+            className="capitalize"
+            style={{ background: style.BgButton, color: style.P }}
+          >
+            {category.name}
+          </Chip>
+        ))}
+      </div>
+    </div>
+  );
+
+          
 
       case "actions":
         return (
