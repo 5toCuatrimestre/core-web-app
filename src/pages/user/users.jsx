@@ -17,16 +17,16 @@ import {
   Pagination,
 } from "@heroui/react";
 import { ModalU } from "../../components/modalU";
-import { users } from "../../json/users";
+import { useAllUsers } from "../../hooks/useUsers";
 import { StyleContext } from "../../core/StyleContext";
 
 export const columns = [
-  { name: "ID", uid: "user_id", sortable: true },
+  { name: "ID", uid: "userId", sortable: true },
   { name: "NOMBRE", uid: "name", sortable: true },
-  { name: "TELÉFONO", uid: "phone_number" },
-  { name: "ROL", uid: "role", sortable: true },
+  { name: "TELÉFONO", uid: "phoneNumber" },
+  { name: "ROL", uid: "rol", sortable: true },
   { name: "ESTADO", uid: "status", sortable: true },
-  { name: "CREADO EN", uid: "created_at", sortable: true },
+  { name: "CREADO EN", uid: "createdAt", sortable: true },
   { name: "ACCIONES", uid: "actions" },
 ];
 
@@ -34,7 +34,6 @@ export const statusOptions = [
   { name: "Activo", uid: "activo" },
   { name: "Inactivo", uid: "inactivo" },
 ];
-
 
 export function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
@@ -155,6 +154,8 @@ const INITIAL_VISIBLE_COLUMNS = [
 
 export function Users() {
   const { style } = useContext(StyleContext);
+  // Agrega la consulta a la API
+  const { data, isLoading, error } = useAllUsers();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -168,6 +169,8 @@ export function Users() {
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
+
+  const users = data?.result ?? [];
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -220,7 +223,7 @@ export function Users() {
 
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
-
+  
     switch (columnKey) {
       case "name":
         return (
@@ -236,26 +239,29 @@ export function Users() {
             {user.email}
           </User>
         );
-      case "role":
+      case "rol":
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-400">
-              {user.team}
-            </p>
+            {/* Si deseas mostrar algún otro dato (por ejemplo, team) */}
           </div>
         );
       case "status":
         return (
           <Chip
             className="capitalize"
-            color={statusColorMap[user.status]}
+            color={user.status === "ACTIVE" ? "success" : "danger"}
             size="sm"
             variant="flat"
           >
             {cellValue}
           </Chip>
         );
+      // Puedes agregar más casos si lo requieres, por ejemplo:
+      case "phoneNumber":
+        return cellValue;
+      case "createdAt":
+        return cellValue;
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
@@ -274,16 +280,10 @@ export function Users() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu style={{ background: style.BgCard }}>
-                <DropdownItem
-                  key="edit"
-                  style={{ background: style.BgButton, color: style.P }}
-                >
+                <DropdownItem key="edit" style={{ background: style.BgButton, color: style.P }}>
                   Editar
                 </DropdownItem>
-                <DropdownItem
-                  key="delete"
-                  style={{ background: style.BgButton, color: style.P }}
-                >
+                <DropdownItem key="delete" style={{ background: style.BgButton, color: style.P }}>
                   Eliminar
                 </DropdownItem>
               </DropdownMenu>
@@ -293,7 +293,8 @@ export function Users() {
       default:
         return cellValue;
     }
-  }, []);
+  }, [style]);
+  
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -479,51 +480,61 @@ export function Users() {
 
   return (
     <>
-      <ModalU isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <Table
-        style={{
-          background: style.BgCard,
-          color: style.P,
-        }}
-        classNames={{
-          wrapper: "p-0 m-0", // Asegura que en Tailwind no haya
-        }}
-        isHeaderSticky
-        aria-label="Example table with custom cells, pagination and sorting"
-        bottomContent={bottomContent}
-        bottomContentPlacement="outside"
-        selectedKeys={selectedKeys}
-        sortDescriptor={sortDescriptor}
-        topContent={topContent}
-        topContentPlacement="outside"
-        onSelectionChange={setSelectedKeys}
-        onSortChange={setSortDescriptor}
-      >
-        <TableHeader columns={headerColumns}>
-          {(column) => (
-            <TableColumn
-              key={column.uid}
-              align={column.uid === "actions" ? "center" : "start"}
-              allowsSorting={column.sortable}
-              style={{ background: style.BgButton, color: style.P }}
-            >
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody
-          emptyContent={"No se encontraron usuarios"}
-          items={sortedItems}
-        >
-          {(item) => (
-            <TableRow key={item.id} style={{ color: style.H3 }}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
+      {isLoading ? (
+        <div>Cargando usuarios...</div>
+      ) : error ? (
+        <div>Error al cargar usuarios</div>
+      ) : (
+        <>
+          {console.log("users", users)}
+
+          <ModalU isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          <Table
+            style={{
+              background: style.BgCard,
+              color: style.P,
+            }}
+            classNames={{
+              wrapper: "p-0 m-0", // Asegura que en Tailwind no haya
+            }}
+            isHeaderSticky
+            aria-label="Example table with custom cells, pagination and sorting"
+            bottomContent={bottomContent}
+            bottomContentPlacement="outside"
+            selectedKeys={selectedKeys}
+            sortDescriptor={sortDescriptor}
+            topContent={topContent}
+            topContentPlacement="outside"
+            onSelectionChange={setSelectedKeys}
+            onSortChange={setSortDescriptor}
+          >
+            <TableHeader columns={headerColumns}>
+              {(column) => (
+                <TableColumn
+                  key={column.uid}
+                  align={column.uid === "actions" ? "center" : "start"}
+                  allowsSorting={column.sortable}
+                  style={{ background: style.BgButton, color: style.P }}
+                >
+                  {column.name}
+                </TableColumn>
               )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            </TableHeader>
+            <TableBody
+              emptyContent={"No se encontraron usuarios"}
+              items={sortedItems}
+            >
+              {(item) => (
+                <TableRow key={item.userId} style={{ color: style.H3 }}>
+                  {(columnKey) => (
+                    <TableCell>{renderCell(item, columnKey)}</TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </>
+      )}
     </>
   );
 }
