@@ -16,9 +16,10 @@ import {
   User,
   Pagination,
 } from "@heroui/react";
-import { ModalP } from "../../components/ModalP";
+import { ModalP } from "../../components/modalP";
 import { products } from "../../json/products";
 import { StyleContext } from "../../core/StyleContext";
+import { LoadingSpinner } from "../../components/loadingSpinner";
 
 export const columns = [
   { name: "ID", uid: "product_id", sortable: true },
@@ -159,6 +160,7 @@ const INITIAL_VISIBLE_COLUMNS = [
 export function Products() {
   const { style } = useContext(StyleContext);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [selectedProduct, setSelectedProduct] = React.useState(null);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -259,76 +261,57 @@ export function Products() {
             {cellValue}
           </Chip>
         );
-        case "images":
-          return (
-            <div className="max-w-[250px] h-20 overflow-x-auto overflow-y-hidden py-1 scrollbar-hide flex items-center">
-              <div className="flex gap-2 flex-nowrap">
-                {(product.images || []).map((image) => (
-                  <div key={image.id} className="relative flex-shrink-0 w-16 h-16">
-                    <img
-                      src={image.url}
-                      alt={`${product.name} imagen ${image.id}`}
-                      className="w-full h-full object-cover rounded-lg shadow-md"
-                    />
-                  </div>
-                ))}
-              </div>
+      case "images":
+        return (
+          <div className="max-w-[250px] h-20 overflow-x-auto overflow-y-hidden py-1 scrollbar-hide flex items-center">
+            <div className="flex gap-2 flex-nowrap">
+              {(product.images || []).map((image) => (
+                <div
+                  key={image.id}
+                  className="relative flex-shrink-0 w-16 h-16"
+                >
+                  <img
+                    src={image.url}
+                    alt={`${product.name} imagen ${image.id}`}
+                    className="w-full h-full object-cover rounded-lg shadow-md"
+                  />
+                </div>
+              ))}
             </div>
-          );
-        
+          </div>
+        );
 
-          case "categories":
-  return (
-    <div className="max-w-[250px] h-auto overflow-x-auto overflow-y-hidden py-1 scrollbar-hide flex items-center">
-      <div className="grid grid-flow-col auto-cols-max grid-rows-2 gap-1">
-        {(product.categories || []).map((category) => (
-          <Chip
-            key={category.id}
-            size="sm"
-            className="capitalize"
-            style={{ background: style.BgButton, color: style.P }}
-          >
-            {category.name}
-          </Chip>
-        ))}
-      </div>
-    </div>
-  );
-
-          
-
+      case "categories":
+        return (
+          <div className="max-w-[250px] h-auto overflow-x-auto overflow-y-hidden py-1 scrollbar-hide flex items-center">
+            <div className="grid grid-flow-col auto-cols-max grid-rows-2 gap-1">
+              {(product.categories || []).map((category) => (
+                <Chip
+                  key={category.id}
+                  size="sm"
+                  className="capitalize"
+                  style={{ background: style.BgButton, color: style.P }}
+                >
+                  {category.name}
+                </Chip>
+              ))}
+            </div>
+          </div>
+        );
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="light"
-                  style={{ background: style.BgButton, color: style.P }}
-                >
-                  <VerticalDotsIcon
-                    className="text-default-300"
-                    style={{ background: style.BgButton, color: style.P }}
-                  />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu style={{ background: style.BgCard }}>
-                <DropdownItem
-                  key="edit"
-                  style={{ background: style.BgButton, color: style.P }}
-                >
-                  Editar
-                </DropdownItem>
-                <DropdownItem
-                  key="delete"
-                  style={{ background: style.BgButton, color: style.P }}
-                >
-                  Eliminar
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+            <Button
+              size="sm"
+              key={product.id}
+              style={{ background: style.BgButton, color: style.P }}
+              onPress={() => {
+                setSelectedProduct(product);
+                setIsModalOpen(true);
+              }}
+            >
+              Editar
+            </Button>
           </div>
         );
       default:
@@ -520,14 +503,24 @@ export function Products() {
 
   return (
     <>
-      <ModalP isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {isModalOpen && (
+        <ModalP
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedProduct(null);
+          }}
+          product={selectedProduct}
+        />
+      )}
+
       <Table
         style={{
           background: style.BgCard,
           color: style.P,
         }}
         classNames={{
-          wrapper: "p-0 m-0", // Asegura que en Tailwind no haya
+          wrapper: "p-0 m-0",
         }}
         isHeaderSticky
         aria-label="Example table with custom cells, pagination y sorting"

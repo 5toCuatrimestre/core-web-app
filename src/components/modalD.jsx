@@ -1,3 +1,4 @@
+import React, { useState, useContext } from "react";
 import {
   Modal,
   ModalContent,
@@ -5,10 +6,11 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  Input
+  Input,
 } from "@heroui/react";
 
 import { LoadDishes } from "./loadDishes";
+import { StyleContext } from "../core/StyleContext";
 
 export const SearchIcon = (props) => {
   return (
@@ -41,32 +43,41 @@ export const SearchIcon = (props) => {
 };
 
 export function ModalD({ isOpen, onClose }) {
-  
+  const { style } = useContext(StyleContext);
+
   return (
     <Modal
       isOpen={isOpen}
       placement="top-center"
       onOpenChange={onClose}
       backdrop={"blur"}
-      scrollBehavior="inside" // Evita que el modal genere scroll en la página
+      scrollBehavior="inside"
+      className="border-1"
+      style={{
+        background: style.BgCard,
+        borderColor: style.Button, // ✅ Ahora sí funcionará
+      }}
     >
       <ModalContent size="xl" className="max-w-[1100px] w-full">
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1">
+            <ModalHeader
+              className="flex flex-col gap-1"
+              style={{ color: style.H2 }}
+            >
               Registrar Menú
               <Input
-                          isClearable
-                          className="w-full sm:max-w-[44%] mt-2"
-                          placeholder="Buscar por nombre"
-                          startContent={<SearchIcon />}
-                          // value={filterValue}
-                          // onClear={() => onClear()}
-                          // onValueChange={onSearchChange}
-                        />
+                isClearable
+                className="w-full sm:max-w-[44%] mt-2"
+                placeholder="Buscar por nombre"
+                startContent={<SearchIcon />}
+                // value={filterValue}
+                // onClear={() => onClear()}
+                // onValueChange={onSearchChange}
+              />
             </ModalHeader>
             <ModalBody>
-              <LoadDishes />
+              <LoadDishes isModal={true} />
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="flat" onPress={onClose}>

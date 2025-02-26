@@ -10,7 +10,7 @@ import { ModalL } from "../../components/modalL";
 const { Sider, Content } = Layout;
 
 export function BaseLayout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null); // Estado global para la foto de perfil

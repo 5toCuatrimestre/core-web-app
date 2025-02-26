@@ -3,7 +3,7 @@ import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { Button } from "@heroui/react";
 import { StyleContext } from "../../core/StyleContext";
 import { LoadDishes } from "../../components/loadDishes"; // Cuadrícula de tarjetas
-import { ModalD } from "../../components/ModalD";         // Modal existente
+import { ModalD } from "../../components/modalD"        // Modal existente
 
 export function Dish() {
   const { style } = useContext(StyleContext);
@@ -27,7 +27,7 @@ export function Dish() {
         </CardHeader>
 
         <CardBody>
-          <LoadDishes />
+          <LoadDishes isModal={false}/>
         </CardBody>
 
         <CardFooter className="flex justify-end">

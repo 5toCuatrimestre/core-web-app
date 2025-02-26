@@ -1,5 +1,10 @@
 // src/App.jsx
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { BaseLayout } from "./pages/layouts/BaseLayout";
 import { Login } from "./pages/auth/login";
 import { Style } from "./pages/style/style";
@@ -9,6 +14,7 @@ import { Products } from "./pages/products/products";
 import { Dish } from "./pages/dish/dish";
 import QuizApp from "./pages/QuizApp";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
+import { LoadingSpinner } from "./components/loadingSpinner";
 
 function App() {
   return (
@@ -24,6 +30,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<BaseLayout />}>
             <Route path="/style" element={<Style />} />
+            <Route path="/sp" element={<LoadingSpinner />} />
             <Route path="/user" element={<Users />} />
             <Route path="/statistic" element={<Statistics />} />
             <Route path="/product" element={<Products />} />

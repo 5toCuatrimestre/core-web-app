@@ -19,6 +19,7 @@ import {
 import { ModalU } from "../../components/modalU";
 import { useAllUsers } from "../../hooks/useUsers";
 import { StyleContext } from "../../core/StyleContext";
+import { LoadingSpinner } from "../../components/loadingSpinner";
 
 export const columns = [
   { name: "ID", uid: "userId", sortable: true },
@@ -31,8 +32,8 @@ export const columns = [
 ];
 
 export const statusOptions = [
-  { name: "Activo", uid: "activo" },
-  { name: "Inactivo", uid: "inactivo" },
+  { name: "Activo", uid: "ACTIVE" },
+  { name: "Inactivo", uid: "INACTIVE" },
 ];
 
 export function capitalize(s) {
@@ -138,16 +139,10 @@ export const ChevronDownIcon = ({ strokeWidth = 1.5, ...otherProps }) => {
     </svg>
   );
 };
-
-const statusColorMap = {
-  activo: "success",
-  inactivo: "danger",
-};
-
 const INITIAL_VISIBLE_COLUMNS = [
   "name",
-  "phone_number",
-  "role",
+  "phoneNumber",
+  "rol",
   "status",
   "actions",
 ];
@@ -157,6 +152,7 @@ export function Users() {
   // Agrega la consulta a la API
   const { data, isLoading, error } = useAllUsers();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [selectedUser, setSelectedUser] = React.useState(null);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -221,80 +217,70 @@ export function Users() {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
-  
-    switch (columnKey) {
-      case "name":
-        return (
-          <User
-            avatarProps={{
-              radius: "lg",
-              src: user.avatar,
-              className: "hidden",
-            }}
-            description={user.email}
-            name={cellValue}
-          >
-            {user.email}
-          </User>
-        );
-      case "rol":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
-            {/* Si deseas mostrar algún otro dato (por ejemplo, team) */}
-          </div>
-        );
-      case "status":
-        return (
-          <Chip
-            className="capitalize"
-            color={user.status === "ACTIVE" ? "success" : "danger"}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
-      // Puedes agregar más casos si lo requieres, por ejemplo:
-      case "phoneNumber":
-        return cellValue;
-      case "createdAt":
-        return cellValue;
-      case "actions":
-        return (
-          <div className="relative flex justify-end items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="light"
-                  style={{ background: style.BgButton, color: style.P }}
-                >
-                  <VerticalDotsIcon
-                    className="text-default-300"
-                    style={{ background: style.BgButton, color: style.P }}
-                  />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu style={{ background: style.BgCard }}>
-                <DropdownItem key="edit" style={{ background: style.BgButton, color: style.P }}>
-                  Editar
-                </DropdownItem>
-                <DropdownItem key="delete" style={{ background: style.BgButton, color: style.P }}>
-                  Eliminar
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, [style]);
-  
+  const renderCell = React.useCallback(
+    (user, columnKey) => {
+      const cellValue = user[columnKey];
+
+      switch (columnKey) {
+        case "name":
+          return (
+            <User
+              avatarProps={{
+                radius: "lg",
+                src: user.avatar,
+                className: "hidden",
+              }}
+              description={user.email}
+              name={cellValue}
+            >
+              {user.email}
+            </User>
+          );
+        case "rol":
+          return (
+            <div className="flex flex-col">
+              <p className="text-bold text-small capitalize">{cellValue}</p>
+              {/* Si deseas mostrar algún otro dato (por ejemplo, team) */}
+            </div>
+          );
+        case "status":
+          return (
+            <Chip
+              className="capitalize"
+              color={user.status === "ACTIVE" ? "success" : "danger"}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue === "ACTIVE" ? "Activo" : "Inactivo"}
+            </Chip>
+          );
+        // Puedes agregar más casos si lo requieres, por ejemplo:
+        case "phoneNumber":
+          return cellValue;
+        case "createdAt":
+          return cellValue;
+        case "actions":
+          return (
+            <div className="relative flex justify-end items-center gap-2">
+              <Button
+                size="sm"
+                key={user.id}
+                style={{ background: style.BgButton, color: style.P }}
+                onPress={() => {
+                  setSelectedUser(user);
+                  setIsModalOpen(true);
+                }}
+              >
+                Editar
+              </Button>
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    [style]
+  );
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -394,7 +380,10 @@ export function Users() {
             <Button
               color="primary"
               endContent={<PlusIcon />}
-              onPress={() => setIsModalOpen(true)}
+              onPress={() => {
+                setSelectedUser(null);
+                setIsModalOpen(true);
+              }}
               style={{ background: style.BgButton, color: style.P }}
             >
               Añadir
@@ -481,14 +470,21 @@ export function Users() {
   return (
     <>
       {isLoading ? (
-        <div>Cargando usuarios...</div>
+        <LoadingSpinner />
       ) : error ? (
         <div>Error al cargar usuarios</div>
       ) : (
         <>
           {console.log("users", users)}
 
-          <ModalU isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          <ModalU
+            isOpen={isModalOpen}
+            onClose={() => {
+              setIsModalOpen(false);
+              setSelectedUser(null);
+            }}
+            user={selectedUser}
+          />
           <Table
             style={{
               background: style.BgCard,
