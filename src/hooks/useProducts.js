@@ -1,7 +1,9 @@
+// hooks/useProducts.js
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAllProducts, createProduct, updateProduct } from "../api/productApi";
 
-export const useAllProducts = () => useQuery({ queryKey: ["products"], queryFn: getAllProducts });
+export const useAllProducts = () =>
+  useQuery({ queryKey: ["products"], queryFn: getAllProducts });
 
 export const useCreateProduct = () => {
   const queryClient = useQueryClient();

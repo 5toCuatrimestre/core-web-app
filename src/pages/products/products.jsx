@@ -16,13 +16,13 @@ import {
   User,
   Pagination,
 } from "@heroui/react";
+import { useAllProducts } from "../../hooks/useProducts";
 import { ModalP } from "../../components/modalP";
-import { products } from "../../json/products";
 import { StyleContext } from "../../core/StyleContext";
 import { LoadingSpinner } from "../../components/loadingSpinner";
 
 export const columns = [
-  { name: "ID", uid: "product_id", sortable: true },
+  { name: "ID", uid: "productId", sortable: true },
   { name: "NOMBRE", uid: "name", sortable: true },
   { name: "DESCRIPCIÓN", uid: "description" },
   { name: "PRECIO", uid: "price", sortable: true },
@@ -34,8 +34,8 @@ export const columns = [
 ];
 
 export const statusOptions = [
-  { name: "Activo", uid: "activo" },
-  { name: "Inactivo", uid: "inactivo" },
+  { name: "Activo", uid: "active" },
+  { name: "Inactivo", uid: "inactive" },
 ];
 
 export function capitalize(s) {
@@ -143,8 +143,8 @@ export const ChevronDownIcon = ({ strokeWidth = 1.5, ...otherProps }) => {
 };
 
 const statusColorMap = {
-  activo: "success",
-  inactivo: "danger",
+  active: "success",
+  inactive: "danger",
 };
 
 const INITIAL_VISIBLE_COLUMNS = [
@@ -161,6 +161,7 @@ export function Products() {
   const { style } = useContext(StyleContext);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
+  const { data, isLoading, error } = useAllProducts();
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -174,6 +175,8 @@ export function Products() {
   });
   const [page, setPage] = React.useState(1);
 
+  const products = data?.result ?? [];
+  
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
@@ -196,9 +199,11 @@ export function Products() {
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredProducts = filteredProducts.filter((product) =>
-        Array.from(statusFilter).includes(product.status)
-      );
+      filteredProducts = filteredProducts.filter((product) => {
+        // Convertir el valor booleano a string correspondiente
+        const productStatus = product.status ? "active" : "inactive";
+        return Array.from(statusFilter).includes(productStatus);
+      });
     }
 
     return filteredProducts;
@@ -250,28 +255,32 @@ export function Products() {
             </p>
           </div>
         );
-      case "status":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[product.status]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
+        case "status":
+          // Convertir el valor booleano a string para mostrar
+          const statusText = product.status ? "Activo" : "Inactivo";
+          const statusValue = product.status ? "active" : "inactive";
+          return (
+            <Chip
+              className="capitalize"
+              color={statusColorMap[statusValue]}
+              size="sm"
+              variant="flat"
+            >
+              {statusText}
+            </Chip>
+          );
       case "images":
         return (
           <div className="max-w-[250px] h-20 overflow-x-auto overflow-y-hidden py-1 scrollbar-hide flex items-center">
             <div className="flex gap-2 flex-nowrap">
-              {(product.images || []).map((image) => (
+              {(product.multimedia || []).map((image) => (
                 <div
                   key={image.id}
                   className="relative flex-shrink-0 w-16 h-16"
                 >
                   <img
-                    src={image.url}
+                  //with backticks add https://
+                    src={`https://${image.url}`}
                     alt={`${product.name} imagen ${image.id}`}
                     className="w-full h-full object-cover rounded-lg shadow-md"
                   />
@@ -285,9 +294,9 @@ export function Products() {
         return (
           <div className="max-w-[250px] h-auto overflow-x-auto overflow-y-hidden py-1 scrollbar-hide flex items-center">
             <div className="grid grid-flow-col auto-cols-max grid-rows-2 gap-1">
-              {(product.categories || []).map((category) => (
+              {(product.productCategories || []).map((category) => (
                 <Chip
-                  key={category.id}
+                  key={category.categoryid}
                   size="sm"
                   className="capitalize"
                   style={{ background: style.BgButton, color: style.P }}
@@ -503,61 +512,69 @@ export function Products() {
 
   return (
     <>
-      {isModalOpen && (
-        <ModalP
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedProduct(null);
-          }}
-          product={selectedProduct}
-        />
-      )}
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <div>Error al cargar usuarios</div>
+      ) : (
+        <>
+          {isModalOpen && (
+            <ModalP
+              isOpen={isModalOpen}
+              onClose={() => {
+                setIsModalOpen(false);
+                setSelectedProduct(null);
+              }}
+              product={selectedProduct}
+            />
+          )}
 
-      <Table
-        style={{
-          background: style.BgCard,
-          color: style.P,
-        }}
-        classNames={{
-          wrapper: "p-0 m-0",
-        }}
-        isHeaderSticky
-        aria-label="Example table with custom cells, pagination y sorting"
-        bottomContent={bottomContent}
-        bottomContentPlacement="outside"
-        selectedKeys={selectedKeys}
-        sortDescriptor={sortDescriptor}
-        topContent={topContent}
-        topContentPlacement="outside"
-        onSelectionChange={setSelectedKeys}
-        onSortChange={setSortDescriptor}
-      >
-        <TableHeader columns={headerColumns}>
-          {(column) => (
-            <TableColumn
-              key={column.uid}
-              align={column.uid === "actions" ? "center" : "start"}
-              allowsSorting={column.sortable}
-              style={{ background: style.BgButton, color: style.P }}
-            >
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody
-          emptyContent={"No se encontraron usuarios"}
-          items={sortedItems}
-        >
-          {(item) => (
-            <TableRow key={item.id} style={{ color: style.H3 }}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
+          <Table
+            style={{
+              background: style.BgCard,
+              color: style.P,
+            }}
+            classNames={{
+              wrapper: "p-0 m-0",
+            }}
+            isHeaderSticky
+            aria-label="Example table with custom cells, pagination y sorting"
+            bottomContent={bottomContent}
+            bottomContentPlacement="outside"
+            selectedKeys={selectedKeys}
+            sortDescriptor={sortDescriptor}
+            topContent={topContent}
+            topContentPlacement="outside"
+            onSelectionChange={setSelectedKeys}
+            onSortChange={setSortDescriptor}
+          >
+            <TableHeader columns={headerColumns}>
+              {(column) => (
+                <TableColumn
+                  key={column.uid}
+                  align={column.uid === "actions" ? "center" : "start"}
+                  allowsSorting={column.sortable}
+                  style={{ background: style.BgButton, color: style.P }}
+                >
+                  {column.name}
+                </TableColumn>
               )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            </TableHeader>
+            <TableBody
+              emptyContent={"No se encontraron productos"}
+              items={sortedItems}
+            >
+              {(item) => (
+                <TableRow key={item.productId} style={{ color: style.H3 }}>
+                  {(columnKey) => (
+                    <TableCell>{renderCell(item, columnKey)}</TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </>
+      )}
     </>
   );
 }
