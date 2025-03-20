@@ -58,7 +58,7 @@ export function Sidebar({ isSidebarOpen, toggleSidebar, togglePopover, openModal
       <div className="relative p-3 mt-auto">
         <button className="flex items-center cursor-pointer focus:outline-none" onClick={togglePopover}>
           {profilePhoto ? (
-            <img src={profilePhoto} alt="Perfil" className="w-9 h-9 rounded-full" style={{ borderColor: style.BgButton }} />
+            <img src={`https://${profilePhoto}`} alt="Perfil" className="w-9 h-9 rounded-full" style={{ borderColor: style.BgButton }} />
           ) : (
             <CgProfile className="text-3xl" style={{ color: style.BgButton }} />
           )}

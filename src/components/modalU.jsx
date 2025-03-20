@@ -10,6 +10,7 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
+import { useUpdateUser, useCreateUser } from "../hooks/useUsers";
 
 export function ModalU({ isOpen, onClose, user }) {
   // Estados para los campos del formulario
@@ -18,7 +19,12 @@ export function ModalU({ isOpen, onClose, user }) {
     email: "",
     phoneNumber: "",
     rol: "",
+    status: "",
   });
+
+  // Hooks de TanStack Query para actualizar y crear usuario
+  const { mutate: updateUserMutate } = useUpdateUser();
+  const { mutate: createUserMutate } = useCreateUser();
 
   // Efecto para cargar los datos del usuario cuando se abre el modal para editar
   useEffect(() => {
@@ -37,6 +43,7 @@ export function ModalU({ isOpen, onClose, user }) {
         email: "",
         phoneNumber: "",
         rol: "",
+        status: "",
       });
     }
   }, [user, isOpen]);
@@ -56,14 +63,24 @@ export function ModalU({ isOpen, onClose, user }) {
       email: "",
       phoneNumber: "",
       rol: "",
+      status: "",
     });
     onClose();
   };
 
-  // Función para guardar el usuario
+  // Función para guardar (crear o actualizar) el usuario
   const handleSave = () => {
-    // Aquí podrías agregar la lógica para guardar los datos
-    console.log("Datos a guardar:", formData);
+    if (user) {
+      // Modo edición
+      const userId = Number(user.userId);
+      if (!isNaN(userId) && userId > 0) {
+        updateUserMutate({ id: userId, userData: formData });
+      } else {
+        console.error("ID del usuario inválido, no se envió la actualización.");
+      }
+    } else {
+      createUserMutate(formData);
+    }
     handleClose();
   };
 
@@ -112,13 +129,13 @@ export function ModalU({ isOpen, onClose, user }) {
                     handleChange("rol", Array.from(keys)[0])
                   }
                 >
-                  <SelectItem key="ADMIN" value="administrador">
+                  <SelectItem key="ADMIN" value="ADMIN">
                     Administrador
                   </SelectItem>
-                  <SelectItem key="LEADER" value="líder">
+                  <SelectItem key="LEADER" value="LEADER">
                     Líder
                   </SelectItem>
-                  <SelectItem key="WAITER" value="mesero">
+                  <SelectItem key="WAITER" value="WAITER">
                     Mesero
                   </SelectItem>
                 </Select>
@@ -129,10 +146,10 @@ export function ModalU({ isOpen, onClose, user }) {
                     handleChange("status", Array.from(keys)[0])
                   }
                 >
-                  <SelectItem key="ACTIVE" value="true">
+                  <SelectItem key="ACTIVE" value="ACTIVE">
                     Activo
                   </SelectItem>
-                  <SelectItem key="INACTIVE" value="false">
+                  <SelectItem key="INACTIVE" value="INACTIVE">
                     Inactivo
                   </SelectItem>
                 </Select>
