@@ -5,25 +5,15 @@ import { BarChart } from "../../components/BarChart/BarChart";
 
 const chartdata = [
   {
-    name: "Líder Juan",
     "Mesero A": 890,
     "Mesero B": 338,
     "Mesero C": 538,
-  },
-  {
-    name: "Líder María",
     "Mesero D": 396,
     "Mesero E": 138,
     "Mesero F": 436,
-  },
-  {
-    name: "Líder Pedro",
     "Mesero G": 289,
     "Mesero H": 233,
     "Mesero I": 253,
-  },
-  {
-    name: "Líder Ana",
     "Mesero J": 333,
     "Mesero K": 133,
     "Mesero L": 533,
