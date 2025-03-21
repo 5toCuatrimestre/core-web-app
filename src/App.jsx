@@ -12,7 +12,6 @@ import { Users } from "./pages/user/users";
 import { Statistics } from "./pages/statistics/statistics";
 import { Products } from "./pages/products/products";
 import { Dish } from "./pages/dish/dish";
-import QuizApp from "./pages/QuizApp";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { LoadingSpinner } from "./components/loadingSpinner";
 
@@ -35,7 +34,6 @@ function App() {
             <Route path="/statistic" element={<Statistics />} />
             <Route path="/product" element={<Products />} />
             <Route path="/dish" element={<Dish />} />
-            <Route path="/qp" element={<QuizApp />} />
           </Route>
         </Route>
 

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { ColorPicker } from "antd";
 import { StyleContext } from "../../core/StyleContext";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
@@ -13,9 +13,7 @@ import {
   Button,
 } from "@heroui/react";
 import { users } from "../../json/users";
-
-// Ejemplo de ícono, si deseas alguno para header o similar
-// import { FaUserCircle } from "react-icons/fa";
+import { useAllStyles } from "../../hooks/useStyles";
 
 export function Style() {
   // Datos y columnas estáticas para la vista previa
@@ -30,42 +28,56 @@ export function Style() {
   ];
   // Solo usamos los primeros 3 usuarios para la vista previa
   const previewUsers = users.slice(0, 3);
+  
   const { handleColorChange: updateGlobalStyle } = useContext(StyleContext);
   const { style } = useContext(StyleContext);
-
-  // 🎨 Tres temas predefinidos
-  const themes = [
-    {
-      H1: "#ffffff",
-      H2: "#cccccc",
-      H3: "#aaaaaa",
-      P: "#000000",
-      BgCard: "#222222",
-      BgInterface: "#111111",
-      BgButton: "#c7c7c7",
-    },
-    {
-      H1: "#000000",
-      H2: "#333333",
-      H3: "#000000",
-      P: "#ffffff",
-      BgCard: "#f0f0f0",
-      BgInterface: "#ffffff",
-      BgButton: "#000000",
-    },
-    {
-      H1: "#ffffff",
-      H2: "#ffffff",
-      H3: "#ffffff",
-      P: "#000000",
-      BgCard: "#05004a",
-      BgInterface: "#1f24ab",
-      BgButton: "#ffffff",
-    },
-  ];
-
+  const { data: styles, isLoading, isError } = useAllStyles(); 
+  
+  // Estado inicial con colores predeterminados
+  const defaultColors = {
+    H1: "#ffffff",
+    H2: "#cccccc",
+    H3: "#aaaaaa",
+    P: "#000000",
+    BgCard: "#222222",
+    BgInterface: "#111111",
+    BgButton: "#c7c7c7",
+  };
+  
+  // Inicializamos themes con un array vacío para evitar errores antes de que los datos estén disponibles
+  const [themes, setThemes] = useState([]);
   const [selectedThemeIndex, setSelectedThemeIndex] = useState(null);
-  const [colors, setColors] = useState(themes[0]); // Inicia con el primer tema
+  const [colors, setColors] = useState(defaultColors);
+  
+  // Cargar los temas cuando los datos estén disponibles
+  useEffect(() => {
+    if (styles && styles.result && Array.isArray(styles.result)) {
+      setThemes(styles.result);
+      
+      // Buscar el tema activo
+      const activeIndex = styles.result.findIndex(style => style.status === true);
+      if (activeIndex >= 0) {
+        setSelectedThemeIndex(activeIndex);
+        
+        // Asegurarnos de que todos los valores de color sean strings
+        const activeTheme = styles.result[activeIndex];
+        const formattedTheme = {};
+        
+        Object.keys(activeTheme).forEach(key => {
+          if (colorLabels[key]) {
+            // Si es un valor de color, asegurarse de que sea un string
+            formattedTheme[key] = typeof activeTheme[key] === 'string' 
+              ? activeTheme[key] 
+              : (activeTheme[key] === true ? '#000000' : '#' + activeTheme[key].toString(16).padStart(6, '0'));
+          } else {
+            formattedTheme[key] = activeTheme[key];
+          }
+        });
+        
+        setColors(formattedTheme);
+      }
+    }
+  }, [styles]);
 
   // Etiquetas de colores
   const colorLabels = {
@@ -85,7 +97,7 @@ export function Style() {
 
   // Guardar cambios en el contexto global
   const handleSaveChanges = () => {
-    updateGlobalStyle(colors);
+    updateGlobalStyle(colors, colors.styleId);
     console.log("Cambios de colores guardados");
   };
 
@@ -93,8 +105,32 @@ export function Style() {
   const handleThemeSelection = (index) => {
     if (selectedThemeIndex === index) return; // No hacer nada si ya está seleccionado
     setSelectedThemeIndex(index);
-    setColors(themes[index]);
+    
+    // Asegurarnos de que todos los valores de color sean strings antes de actualizar el estado
+    const selectedTheme = themes[index];
+    const formattedTheme = {};
+    
+    Object.keys(selectedTheme).forEach(key => {
+      if (colorLabels[key]) {
+        // Si es un valor de color, asegurarse de que sea un string
+        formattedTheme[key] = typeof selectedTheme[key] === 'string' 
+          ? selectedTheme[key] 
+          : (selectedTheme[key] === true ? '#000000' : '#' + selectedTheme[key].toString(16).padStart(6, '0'));
+      } else {
+        formattedTheme[key] = selectedTheme[key];
+      }
+    });
+    
+    setColors(formattedTheme);
   };
+
+  if (isLoading) {
+    return <div>Cargando estilos...</div>;
+  }
+
+  if (isError) {
+    return <div>Error al cargar los estilos</div>;
+  }
 
   return (
     <div
@@ -120,30 +156,54 @@ export function Style() {
             <div
               key={index}
               className="p-4 rounded-xl relative flex items-center justify-center cursor-pointer"
-              style={{ backgroundColor: previewColors.BgInterface }}
+              style={{ 
+                backgroundColor: typeof previewColors.BgInterface === 'string' 
+                  ? previewColors.BgInterface 
+                  : '#111111' 
+              }}
               onClick={() => handleThemeSelection(index)}
             >
               <div
                 className="p-2 rounded-lg w-full text-left"
-                style={{ backgroundColor: previewColors.BgCard }}
+                style={{ 
+                  backgroundColor: typeof previewColors.BgCard === 'string' 
+                    ? previewColors.BgCard 
+                    : '#222222' 
+                }}
               >
                 <h2
                   className="text-base font-bold"
-                  style={{ color: previewColors.H1 }}
+                  style={{ 
+                    color: typeof previewColors.H1 === 'string' 
+                      ? previewColors.H1 
+                      : '#ffffff' 
+                  }}
                 >
                   {colorLabels.H1}
                 </h2>
-                <p className="text-sm" style={{ color: previewColors.H2 }}>
+                <p className="text-sm" style={{ 
+                  color: typeof previewColors.H2 === 'string' 
+                    ? previewColors.H2 
+                    : '#cccccc' 
+                }}>
                   {colorLabels.H2}
                 </p>
-                <p className="text-xs" style={{ color: previewColors.H3 }}>
+                <p className="text-xs" style={{ 
+                  color: typeof previewColors.H3 === 'string' 
+                    ? previewColors.H3 
+                    : '#aaaaaa' 
+                }}>
                   {colorLabels.H3}
                 </p>
                 <Button
                   className="mt-2"
                   style={{
-                    background: previewColors.BgButton,
-                    color: previewColors.P,
+                    background: typeof previewColors.BgButton === 'string' 
+                      ? previewColors.BgButton 
+                      : '#c7c7c7',
+                    color: typeof previewColors.P === 'string' 
+                      ? previewColors.P 
+                      : '#000000',
                   }}
                 >
                   {colorLabels.BgButton}
@@ -279,21 +339,29 @@ export function Style() {
         </CardHeader>
 
         <CardBody className="flex flex-wrap gap-4 justify-center">
-          {Object.entries(colors).map(([key, value]) => (
-            <div key={key} className="flex flex-col items-center text-center">
-              <h3
-                className="mb-1 text-sm font-medium capitalize"
-                style={{ color: style.H3 }}
-              >
-                {colorLabels[key]}
-              </h3>
-              <ColorPicker
-                value={value}
-                onChange={(color) => handleColorChange(key, color)}
-                className="w-6 h-6"
-              />
-            </div>
-          ))}
+          {Object.entries(colors).map(([key, value]) => {
+            // Solo mostrar los color pickers para propiedades que son colores
+            if (!colorLabels[key]) return null;
+            
+            // Asegurarse de que el valor sea un string válido para ColorPicker
+            const colorValue = typeof value === 'string' ? value : '#000000';
+            
+            return (
+              <div key={key} className="flex flex-col items-center text-center">
+                <h3
+                  className="mb-1 text-sm font-medium capitalize"
+                  style={{ color: style.H3 }}
+                >
+                  {colorLabels[key]}
+                </h3>
+                <ColorPicker
+                  value={colorValue}
+                  onChange={(color) => handleColorChange(key, color)}
+                  className="w-6 h-6"
+                />
+              </div>
+            );
+          })}
         </CardBody>
       </Card>
     </div>
