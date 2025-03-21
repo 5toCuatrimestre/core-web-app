@@ -1,20 +1,38 @@
-import React, { useState, useContext } from "react";
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
+import React, { useState, useContext, useEffect } from "react";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/react";
 import { StyleContext } from "../../core/StyleContext";
 import { LoadDishes } from "../../components/loadDishes"; // Cuadrícula de tarjetas
-import { ModalD } from "../../components/modalD"        // Modal existente
+import { ModalD } from "../../components/modalD"; // Modal existente
+import { useMenu } from "../../hooks/useMenu"; // Para obtener el menú
 
 export function Dish() {
   const { style } = useContext(StyleContext);
 
-  // Control del modal
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [menuProducts, setMenuProducts] = useState([]); // Estado para almacenar los productos del menú
+  const { data: menu, isLoading, error } = useMenu(); // Usamos el hook para obtener el menú
+  
+  // Al cargar los productos del menú, actualizamos el estado
+  useEffect(() => {
+    if (menu && menu.result) {
+      const productIds = menu.result.products.map(product => product.productId); // Extraemos los IDs de los productos
+      setMenuProducts(productIds); // Establecemos los IDs de los productos del menú en el estado
+      console.log("IDs de los productos del menú cargados:", productIds); // Verificamos los IDs cargados
+    }
+  }, [menu]);
+  
+  const handleAddDish = (dish) => {
+    if (!menuProducts.includes(dish.productId)) {
+      setMenuProducts([...menuProducts, dish.productId]); // Agregar el ID del platillo seleccionado
+      console.log("Platillo agregado:", dish); // Log cuando se agrega un platillo
+    }
+  };
 
   return (
-    <div className="w-full">  {/* Contenedor principal que ocupa todo el ancho */}
+    <div className="w-full">
       <Card
-        className="w-full shadow-lg"  // ¡Sin max-w-[1100px]!
+        className="w-full shadow-lg"
         style={{
           background: style.BgCard,
           color: style.P
@@ -27,13 +45,13 @@ export function Dish() {
         </CardHeader>
 
         <CardBody>
-          <LoadDishes isModal={false}/>
+          <LoadDishes isModal={false} menuId={1} menu={menu}/>
         </CardBody>
 
         <CardFooter className="flex justify-end">
           <Button
             style={{ background: style.BgButton, color: style.P }}
-            onPress={() => setIsModalOpen(true)}
+            onPress={() => setIsModalOpen(true)} // Abre el modal
           >
             Agregar Platillo
           </Button>
@@ -41,7 +59,14 @@ export function Dish() {
       </Card>
 
       {/* ModalD se abre/cierra según isModalOpen */}
-      <ModalD isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ModalD
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)} // Cierra el modal
+        menuId={1} // Aquí pasamos el ID del menú
+        menuProducts={menuProducts} // Los productos ya asignados al menú
+        allProducts={[]} // Aquí debes pasar todos los productos disponibles
+        handleAddDish={handleAddDish} // Pasamos la función handleAddDish al modal
+      />
     </div>
   );
 }

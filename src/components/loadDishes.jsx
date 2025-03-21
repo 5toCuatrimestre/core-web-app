@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Card,
   CardBody,
@@ -12,19 +12,19 @@ import {
   ModalFooter,
   Button,
 } from "@heroui/react";
-import { TiDelete } from "react-icons/ti";
-import { products } from "../json/products";
 import { StyleContext } from "../core/StyleContext";
+import { useMenu } from "../hooks/useMenu"; // Importar el hook que obtiene el menú desde la API
 
-export function LoadDishes({ isModal }) {
-  const [selectedDish, setSelectedDish] = useState(null);
+export function LoadDishes({ isModal, menu }) {
+  const [selectedDish, setSelectedDish] = useState(null); // Para el modal de platillo seleccionado
   const { style } = useContext(StyleContext);
+  console.log("Menu en LoadDishes:", menu); // Log para verificar los datos
 
-  // Agrupar los productos por la primera categoría (o "Sin categoría" si no tiene)
-  const groupedProducts = products.reduce((acc, product) => {
+  // Agrupar los productos por categoría
+  const groupedProducts = menu?.result?.products.reduce((acc, product) => {
     const mainCategory =
-      product.categories && product.categories.length > 0
-        ? product.categories[0].name
+      product.productCategories && product.productCategories.length > 0
+        ? product.productCategories[0].name
         : "Sin categoría";
     if (!acc[mainCategory]) {
       acc[mainCategory] = [];
@@ -35,7 +35,7 @@ export function LoadDishes({ isModal }) {
 
   return (
     <div className="space-y-8">
-      {Object.entries(groupedProducts).map(([category, items]) => (
+      {groupedProducts && Object.entries(groupedProducts).map(([category, items]) => (
         <div key={category}>
           <h2 className="text-lg font-bold mb-4" style={{ color: style.H3 }}>
             {category}
@@ -43,27 +43,19 @@ export function LoadDishes({ isModal }) {
           <div className="gap-4 grid grid-cols-4 sm:grid-cols-8">
             {items.map((item) => (
               <Card
-                key={item.id}
+                key={item.productId}
                 isPressable
                 shadow="sm"
                 onPress={() => setSelectedDish(item)}
                 className="w-full flex flex-col relative"
               >
                 <CardBody className="overflow-visible p-0 relative">
-                  {/* Checkbox o icono de eliminar */}
-                  {isModal ? (
+                  {/* Checkbox para seleccionar el platillo */}
+                  {isModal && (
                     <Checkbox
                       className="absolute top-2 left-2 z-20"
                       style={{ color: style.BgButton }}
-                    />
-                  ) : (
-                    <TiDelete
-                      className="absolute top-2 left-2 z-20 text-3xl cursor-pointer"
-                      style={{ color: style.BgButton }}
-                      onClick={(e) => {
-                        e.stopPropagation(); // Evita abrir el modal al hacer clic
-                        console.log(`Eliminar ${item.name}`);
-                      }}
+                      onChange={() => onAddDish(item)} // Llama a la función para agregar el platillo
                     />
                   )}
                   <Image
@@ -71,9 +63,7 @@ export function LoadDishes({ isModal }) {
                     className="w-full object-cover h-[140px]"
                     radius="lg"
                     shadow="sm"
-                    src={
-                      item.images?.[0]?.url || "https://via.placeholder.com/300"
-                    }
+                    src={item.multimedia?.[0]?.url || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtRZhIqCoy71EH-axL3QYcCDGKdKdttyXRNA&s"}
                     width="100%"
                   />
                 </CardBody>
@@ -99,10 +89,10 @@ export function LoadDishes({ isModal }) {
           <ModalContent>
             <ModalHeader>{selectedDish.name}</ModalHeader>
             <ModalBody>
-              {/* Contenedor del carrusel */}
+              {/* Carrusel de imágenes */}
               <div className="max-w-full overflow-x-auto overflow-y-hidden py-2 flex gap-2 -mt-2">
                 <div className="flex gap-2 flex-nowrap">
-                  {(selectedDish.images || []).map((image) => (
+                  {(selectedDish.multimedia || []).map((image) => (
                     <div
                       key={image.id}
                       className="relative flex-shrink-0 w-32 h-32"
@@ -117,14 +107,14 @@ export function LoadDishes({ isModal }) {
                 </div>
               </div>
 
-              {/* Detalles del producto */}
+              {/* Detalles del platillo */}
               <p className="text-lg">{selectedDish.description}</p>
               <p className="text-xl font-bold mt-2">
                 Precio: ${selectedDish.price.toFixed(2)}
               </p>
               <p className="text-sm text-default-500 mt-2">
                 Categorías:{" "}
-                {selectedDish.categories.map((cat) => cat.name).join(", ")}
+                {selectedDish.productCategories.map((cat) => cat.name).join(", ")}
               </p>
             </ModalBody>
             <ModalFooter>
