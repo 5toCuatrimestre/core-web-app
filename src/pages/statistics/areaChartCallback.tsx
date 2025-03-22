@@ -1,70 +1,41 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AreaChart } from "../../components/AreaChart/AreaChart";
+import { getTotalSales } from "../../api/chartsApi"; // Asegúrate de tener la función para consumir la API
 
-const chartdata = [
-  {
-    date: "Ene 24",
-    VentasTotales: 12890,
-  },
-  {
-    date: "Feb 24",
-    VentasTotales: 11256,
-  },
-  {
-    date: "Mar 24",
-    VentasTotales: 14322,
-  },
-  {
-    date: "Abr 24",
-    VentasTotales: 15470,
-  },
-  {
-    date: "May 24",
-    VentasTotales: 13475,
-  },
-  {
-    date: "Jun 24",
-    VentasTotales: 13129,
-  },
-  {
-    date: "Jul 24",
-    VentasTotales: 16490,
-  },
-  {
-    date: "Ago 24",
-    VentasTotales: 14903,
-  },
-  {
-    date: "Sep 24",
-    VentasTotales: 15643,
-  },
-  {
-    date: "Oct 24",
-    VentasTotales: 14837,
-  },
-  {
-    date: "Nov 24",
-    VentasTotales: 14954,
-  },
-  {
-    date: "Dic 24",
-    VentasTotales: 25249,
-  },
-];
+export const AreaChartAxisLabelsExample = ({startDate, endDate}) => {
+  console.log(startDate, endDate);
+  const [chartData, setChartData] = useState([]); // Inicializamos el estado vacío
 
-export const AreaChartAxisLabelsExample= () => (
-  <AreaChart
-    className="h-80"
-    data={chartdata}
-    index="date"
-    categories={["VentasTotales"]}
-    valueFormatter={(number: number) =>
-      `$${Intl.NumberFormat("us").format(number).toString()}`
-    }
-    xAxisLabel="Mes"
-    yAxisLabel="Ventas Totales"
-    fill="solid"
-  />
-);
+  // Fetch the data when the component mounts
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getTotalSales(startDate, endDate);
+        
+        // Usamos directamente data.result que ya contiene los datos en el formato adecuado
+        setChartData(response.result); // Establecemos los datos recibidos directamente en el estado
+      } catch (error) {
+        console.error("Error al obtener los datos de ventas:", error);
+      }
+    };
+
+    fetchData();
+  }, [startDate, endDate]); // Solo se ejecuta una vez al montar el componente
+
+  return (
+    <AreaChart
+      className="h-80"
+      data={chartData} // Usamos los datos obtenidos del endpoint
+      index="date"
+      categories={["ventasTotales"]}
+      valueFormatter={(number) =>
+        `$${Intl.NumberFormat("us").format(number).toString()}`
+      }
+      xAxisLabel="Mes"
+      yAxisLabel="Ventas Totales"
+      fill="solid"
+    />
+  );
+};

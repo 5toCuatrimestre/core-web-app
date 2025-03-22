@@ -1,7 +1,7 @@
 import apiClient from "./apiClient";
 
 export const getTotalSales = async (startDate, endDate) => {
-  const { data } = await apiClient.get(`/charts/total-sales`, { params: { startDate, endDate } });
+  const { data } = await apiClient.get(`/sell/chart-data`, { params: { startDate, endDate } });
   return data;
 };
 
