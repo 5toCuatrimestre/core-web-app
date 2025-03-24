@@ -45,23 +45,23 @@ export function BaseLayout() {
 
         {isPopoverOpen && (
           <div
-            className={`fixed bottom-1 left-14 rounded-lg border-1 shadow-md p-2 z-50 gap-2 flex flex-col backdrop-blur-md
+            className={`fixed bottom-1 left-14 rounded-lg border-1 shadow-md p-2 z-50 gap-2 flex flex-col
       transition-all duration-300 ease-in-out transform ${isPopoverOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
             style={{
-              background: `${style.BgCard}80`,
+              background: style.BgCard,
               borderColor: style.BgButton,
             }}
           >
             <Button
               className="text-left hover:opacity-75 rounded px-4 py-2"
-              style={{ background: style.BgButton, color: style.text }}
+              style={{ background: style.BgButton, color: style.P }}
               onClick={() => navigate("/")}
             >
               Cerrar sesión
             </Button>
             <Button
               className="text-left hover:opacity-75 rounded px-4 py-2"
-              style={{ background: style.BgButton, color: style.text }}
+              style={{ background: style.BgButton, color: style.P }}
               onClick={() => setIsModalOpen(true)}
             >
               Modificar logo

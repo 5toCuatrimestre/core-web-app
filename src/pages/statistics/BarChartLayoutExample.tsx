@@ -1,48 +1,41 @@
-"use client"
+"use client";
 
-import React from "react"
-import { BarChart } from "../../components/BarChart/BarChart"
+import React, { useEffect, useState } from "react";
+import { BarChart } from "../../components/BarChart/BarChart";
+import { getBestSellingDishes } from "../../api/chartsApi";
 
-const chartdata = [
-  {
-    name: "Tacos al Pastor",
-    Ventas: 2488,
-  },
-  {
-    name: "Hamburguesa",
-    Ventas: 1445,
-  },
-  {
-    name: "Pizza Pepperoni",
-    Ventas: 743,
-  },
-  {
-    name: "Sushi Roll",
-    Ventas: 281,
-  },
-  {
-    name: "Ensalada César",
-    Ventas: 251,
-  },
-  {
-    name: "Hot Dog",
-    Ventas: 232,
-  },
-  {
-    name: "Pasta Alfredo",
-    Ventas: 98,
-  },
-]
+const dataFormatter = (number: number) =>
+  Intl.NumberFormat("us").format(number).toString();
 
-export const BarChartLayoutExample = () => {
+export const BarChartLayoutExample = ({ startDate, endDate }) => {
+  const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getBestSellingDishes(startDate, endDate);
+        // Aseguramos que las claves estén en minúscula como espera el componente
+        const normalizedData = response.result.map(item => ({
+          name: item.name,
+          ventas: item.ventas, // aseguramos que se llame ventas
+        }));
+        setChartData(normalizedData);
+      } catch (error) {
+        console.error("Error al obtener los platillos más vendidos:", error);
+      }
+    };
+
+    fetchData();
+  }, [startDate, endDate]);
+
   return (
     <BarChart
       className="h-72"
-      data={chartdata}
+      data={chartData}
       index="name"
-      categories={["Ventas"]}
+      categories={["ventas"]}
       yAxisWidth={80}
       layout="vertical"
     />
-  )
-}
+  );
+};

@@ -6,16 +6,16 @@ export const getTotalSales = async (startDate, endDate) => {
 };
 
 export const getBestSellingDishes = async (startDate, endDate) => {
-  const { data } = await apiClient.get(`/charts/best-selling-dishes`, { params: { startDate, endDate } });
+  const { data } = await apiClient.get(`/sell/top-selling-products`, { params: { startDate, endDate } });
   return data;
 };
 
 export const getWaiterRanking = async (startDate, endDate) => {
-  const { data } = await apiClient.get(`/charts/waiter-ranking`, { params: { startDate, endDate } });
+  const { data } = await apiClient.get(`/rating-user-sell/chart/waiter-ratings`, { params: { startDate, endDate } });
   return data;
 };
 
 export const getPeakHours = async (startDate, endDate) => {
-  const { data } = await apiClient.get(`/charts/peak-hours`, { params: { startDate, endDate } });
+  const { data } = await apiClient.get(`/sell/average-sales-by-hour`, { params: { startDate, endDate } });
   return data;
 };

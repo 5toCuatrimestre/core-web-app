@@ -1,35 +1,44 @@
-"use client"
+"use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BarChart } from "../../components/BarChart/BarChart";
-
-const chartdata = [
-  {
-    "Mesero A": 890,
-    "Mesero B": 338,
-    "Mesero C": 538,
-    "Mesero D": 396,
-    "Mesero E": 138,
-    "Mesero F": 436,
-    "Mesero G": 289,
-    "Mesero H": 233,
-    "Mesero I": 253,
-    "Mesero J": 333,
-    "Mesero K": 133,
-    "Mesero L": 533,
-  },
-];
+import { getWaiterRanking } from "../../api/chartsApi";
 
 const dataFormatter = (number: number) =>
   Intl.NumberFormat("us").format(number).toString();
 
-export const BarChartGroupExample = () => {
+export const BarChartGroupExample = ({ startDate, endDate }) => {
+  const [chartData, setChartData] = useState<Record<string, number>[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getWaiterRanking(startDate, endDate);
+        // Extraemos el objeto de data enviado desde el backend
+        // Ejemplo: { "Mesero A": 890, "Mesero B": 338, ... }
+        const result = response.result[0].data;
+        // Convertimos a array con un solo objeto, igual que en la versión estática
+        const formattedData = [result];
+        // Las categorías serán las claves del objeto
+        const keys = Object.keys(result);
+
+        setChartData(formattedData);
+        setCategories(keys);
+      } catch (error) {
+        console.error("Error al obtener ranking de meseros:", error);
+      }
+    };
+
+    fetchData();
+  }, [startDate, endDate]);
+
   return (
     <BarChart
       className="h-72"
-      data={chartdata}
-      index="name"
-      categories={["Mesero A", "Mesero B", "Mesero C", "Mesero D", "Mesero E", "Mesero F", "Mesero G", "Mesero H", "Mesero I", "Mesero J", "Mesero K", "Mesero L"]}
+      data={chartData}
+      index="name" // Se mantiene igual que en la versión estática, aunque la propiedad "name" no exista en el objeto
+      categories={categories}
       valueFormatter={dataFormatter}
       yAxisWidth={80}
       layout="horizontal"
