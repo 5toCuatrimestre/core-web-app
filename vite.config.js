@@ -8,9 +8,9 @@ export default defineConfig({
     host: true,
     proxy: {
       '/core': {
-        target: 'http://localhost:8080',
+        target: 'https://ucore.cloud',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
     },
   },
