@@ -7,7 +7,7 @@ import {
   ModalFooter,
   Button,
 } from "@heroui/react";
-import { LoadDishesForModal } from "./LoadDishesForModal";
+import { LoadDishesForModal } from "./loadDishesForModal";
 import { useUpdateMenu } from "../hooks/useMenu";
 
 export function ModalD({ isOpen, onClose, menuProducts }) {
