@@ -7,6 +7,7 @@ import { BarChartLayoutExample } from "./BarChartLayoutExample";
 import { BarChartGroupExample } from "./BarChartGroupExample";
 import { BarChartOnValueChangeExample } from "./BarChartOnValueChangeExample";
 import { DateRangePicker } from "@heroui/react";
+import { LoadingSpinner } from "../../components/loadingSpinner"; // Spinner de carga
 
 export function Statistics() {
   const { style } = useContext(StyleContext);
@@ -51,71 +52,96 @@ export function Statistics() {
     }
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Assuming you have a function to fetch data
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      // Fetch data here
+    } catch (error) {
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="grid grid-cols-2 gap-4">
-      {/* Ventas Totales */}
-      <div className="p-6 rounded-lg shadow-md" style={{ background: style.BgCard }}>
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-bold" style={{ color: style.H1 }}>
-            Ventas Totales
-          </h1>
-          <DateRangePicker
-            className="max-w-xs"
-            label="Rango de fecha"
-            value={rangeTotalSales}
-            onChange={handleChangeTotalSales}
-          />
-        </div>
-        <AreaChartAxisLabelsExample startDate={rangeTotalSales[0]} endDate={rangeTotalSales[1]} />
-      </div>
+    <>
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <div>Error al cargar estadísticas</div>
+      ) : (
+        <div className="w-full">
+          <div className="grid grid-cols-2 gap-4">
+            {/* Ventas Totales */}
+            <div className="p-6 rounded-lg shadow-md" style={{ background: style.BgCard }}>
+              <div className="flex justify-between items-center mb-4">
+                <h1 className="text-xl font-bold" style={{ color: style.H1 }}>
+                  Ventas Totales
+                </h1>
+                <DateRangePicker
+                  className="max-w-xs"
+                  label="Rango de fecha"
+                  value={rangeTotalSales}
+                  onChange={handleChangeTotalSales}
+                />
+              </div>
+              <AreaChartAxisLabelsExample startDate={rangeTotalSales[0]} endDate={rangeTotalSales[1]} />
+            </div>
 
-      {/* Platillos Más y Menos Vendidos */}
-      <div className="p-6 rounded-lg shadow-md" style={{ background: style.BgCard }}>
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-bold" style={{ color: style.H1 }}>
-            Platillos Más y Menos Vendidos
-          </h1>
-          <DateRangePicker
-            className="max-w-xs"
-            label="Rango de fecha"
-            value={rangeDishes}
-            onChange={handleChangeDishes}
-          />
-        </div>
-        <BarChartLayoutExample startDate={rangeDishes[0]} endDate={rangeDishes[1]} />
-      </div>
+            {/* Platillos Más y Menos Vendidos */}
+            <div className="p-6 rounded-lg shadow-md" style={{ background: style.BgCard }}>
+              <div className="flex justify-between items-center mb-4">
+                <h1 className="text-xl font-bold" style={{ color: style.H1 }}>
+                  Platillos Más y Menos Vendidos
+                </h1>
+                <DateRangePicker
+                  className="max-w-xs"
+                  label="Rango de fecha"
+                  value={rangeDishes}
+                  onChange={handleChangeDishes}
+                />
+              </div>
+              <BarChartLayoutExample startDate={rangeDishes[0]} endDate={rangeDishes[1]} />
+            </div>
 
-      {/* Ranking de Meseros */}
-      <div className="p-6 rounded-lg shadow-md" style={{ background: style.BgCard }}>
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-bold" style={{ color: style.H1 }}>
-            Ranking de Meseros
-          </h1>
-          <DateRangePicker
-            className="max-w-xs"
-            label="Rango de fecha"
-            value={rangeWaiters}
-            onChange={handleChangeWaiters}
-          />
-        </div>
-        <BarChartGroupExample startDate={rangeWaiters[0]} endDate={rangeWaiters[1]} />
-      </div>
+            {/* Ranking de Meseros */}
+            <div className="p-6 rounded-lg shadow-md" style={{ background: style.BgCard }}>
+              <div className="flex justify-between items-center mb-4">
+                <h1 className="text-xl font-bold" style={{ color: style.H1 }}>
+                  Ranking de Meseros
+                </h1>
+                <DateRangePicker
+                  className="max-w-xs"
+                  label="Rango de fecha"
+                  value={rangeWaiters}
+                  onChange={handleChangeWaiters}
+                />
+              </div>
+              <BarChartGroupExample startDate={rangeWaiters[0]} endDate={rangeWaiters[1]} />
+            </div>
 
-      {/* Horarios de Mayor y Menor Venta */}
-      <div className="p-6 rounded-lg shadow-md" style={{ background: style.BgCard }}>
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-bold" style={{ color: style.H1 }}>
-            Horarios de Mayor y Menor Venta
-          </h1>
-          <DateRangePicker
-            className="max-w-xs"
-            label="Rango de fecha"
-            value={rangePeakHours}
-            onChange={handleChangePeakHours}
-          />
+            {/* Horarios de Mayor y Menor Venta */}
+            <div className="p-6 rounded-lg shadow-md" style={{ background: style.BgCard }}>
+              <div className="flex justify-between items-center mb-4">
+                <h1 className="text-xl font-bold" style={{ color: style.H1 }}>
+                  Horarios de Mayor y Menor Venta
+                </h1>
+                <DateRangePicker
+                  className="max-w-xs"
+                  label="Rango de fecha"
+                  value={rangePeakHours}
+                  onChange={handleChangePeakHours}
+                />
+              </div>
+              <BarChartOnValueChangeExample startDate={rangePeakHours[0]} endDate={rangePeakHours[1]} />
+            </div>
+          </div>
         </div>
-        <BarChartOnValueChangeExample startDate={rangePeakHours[0]} endDate={rangePeakHours[1]} />
-      </div>
-    </div>
+      )}
+    </>
   );
 }

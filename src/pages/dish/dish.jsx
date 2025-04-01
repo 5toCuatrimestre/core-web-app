@@ -5,6 +5,7 @@ import { StyleContext } from "../../core/StyleContext";
 import { LoadDishes } from "../../components/loadDishes"; // Cuadrícula de tarjetas
 import { ModalD } from "../../components/modalD"; // Modal existente
 import { useMenu } from "../../hooks/useMenu"; // Para obtener el menú
+import { LoadingSpinner } from "../../components/loadingSpinner"; // Spinner de carga
 
 export function Dish() {
   const { style } = useContext(StyleContext);
@@ -30,43 +31,51 @@ export function Dish() {
   };
 
   return (
-    <div className="w-full">
-      <Card
-        className="w-full shadow-lg"
-        style={{
-          background: style.BgCard,
-          color: style.P
-        }}
-      >
-        <CardHeader>
-          <h1 className="text-xl font-bold" style={{ color: style.H1 }}>
-            Carta del Día
-          </h1>
-        </CardHeader>
-
-        <CardBody>
-          <LoadDishes isModal={false} menuId={1} menu={menu}/>
-        </CardBody>
-
-        <CardFooter className="flex justify-end">
-          <Button
-            style={{ background: style.BgButton, color: style.P }}
-            onPress={() => setIsModalOpen(true)} // Abre el modal
+    <>
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <div>Error al cargar platillos</div>
+      ) : (
+        <div className="w-full">
+          <Card
+            className="w-full shadow-lg"
+            style={{
+              background: style.BgCard,
+              color: style.P
+            }}
           >
-            Agregar Platillo
-          </Button>
-        </CardFooter>
-      </Card>
+            <CardHeader>
+              <h1 className="text-xl font-bold" style={{ color: style.H1 }}>
+                Carta del Día
+              </h1>
+            </CardHeader>
 
-      {/* ModalD se abre/cierra según isModalOpen */}
-      <ModalD
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)} // Cierra el modal
-        menuId={1} // Aquí pasamos el ID del menú
-        menuProducts={menuProducts} // Los productos ya asignados al menú
-        allProducts={[]} // Aquí debes pasar todos los productos disponibles
-        handleAddDish={handleAddDish} // Pasamos la función handleAddDish al modal
-      />
-    </div>
+            <CardBody>
+              <LoadDishes isModal={false} menuId={1} menu={menu}/>
+            </CardBody>
+
+            <CardFooter className="flex justify-end">
+              <Button
+                style={{ background: style.BgButton, color: style.P }}
+                onPress={() => setIsModalOpen(true)} // Abre el modal
+              >
+                Agregar Platillo
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* ModalD se abre/cierra según isModalOpen */}
+          <ModalD
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)} // Cierra el modal
+            menuId={1} // Aquí pasamos el ID del menú
+            menuProducts={menuProducts} // Los productos ya asignados al menú
+            allProducts={[]} // Aquí debes pasar todos los productos disponibles
+            handleAddDish={handleAddDish} // Pasamos la función handleAddDish al modal
+          />
+        </div>
+      )}
+    </>
   );
 }

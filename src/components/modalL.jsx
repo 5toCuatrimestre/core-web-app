@@ -9,10 +9,12 @@ import {
   Input,
 } from "@heroui/react";
 import { useUploadCompanyLogo, useUpdateCompanyLogo, useCompanyInfo } from "../hooks/useCompany";
+import { LoadingSpinner } from "./loadingSpinner";
 
 export function ModalL({ isOpen, onClose, setProfilePhoto, companyId }) {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Hook para obtener la información de la empresa y su logo
   const { data: companyInfo } = useCompanyInfo();
@@ -50,6 +52,8 @@ export function ModalL({ isOpen, onClose, setProfilePhoto, companyId }) {
       return;
     }
 
+    setIsUploading(true); // Start loading
+
     // 1. Subir la imagen y obtener la URL
     uploadLogoMutate(file, {
       onSuccess: (imageUrl) => {
@@ -59,13 +63,25 @@ export function ModalL({ isOpen, onClose, setProfilePhoto, companyId }) {
           {
             onSuccess: () => {
               setProfilePhoto(imageUrl); // Se actualiza en frontend
+              setIsUploading(false); // Stop loading on success
+              addToast({
+                title: "Logo actualizado",
+                description: "Se subió la imagen con éxito",
+                color: "success",
+              });
               onClose();
             },
-            onError: () => alert("Error al actualizar la empresa."),
+            onError: () => {
+              setIsUploading(false); // Stop loading on error
+              alert("Error al actualizar la empresa.");
+            },
           }
         );
       },
-      onError: () => alert("Error al subir la imagen."),
+      onError: () => {
+        setIsUploading(false); // Stop loading on error
+        alert("Error al subir la imagen.");
+      },
     });
   };
 
@@ -78,19 +94,27 @@ export function ModalL({ isOpen, onClose, setProfilePhoto, companyId }) {
               Modificar Logo
             </ModalHeader>
             <ModalBody>
-              <Input
-                type="file"
-                accept="image/jpeg, image/png, image/jpg, image/svg+xml"
-                onChange={handleFileChange}
-              />
-              {preview && <img src={preview} alt="Vista previa" className="mt-4 w-full h-auto rounded-lg" />}
+              {isUploading ? (
+                <div className="flex justify-center items-center min-h-[200px]">
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                <>
+                  <Input
+                    type="file"
+                    accept="image/jpeg, image/png, image/jpg, image/svg+xml"
+                    onChange={handleFileChange}
+                  />
+                  {preview && <img src={preview} alt="Vista previa" className="mt-4 w-full h-auto rounded-lg" />}
+                </>
+              )}
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="flat" onPress={onClose}>
+              <Button color="danger" variant="flat" onPress={onClose} isDisabled={isUploading}>
                 Cancelar
               </Button>
-              <Button color="primary" onPress={handleSave}>
-                Guardar Cambios
+              <Button color="primary" onPress={handleSave} isDisabled={isUploading}>
+                {isUploading ? "Guardando..." : "Guardar Cambios"}
               </Button>
             </ModalFooter>
           </>

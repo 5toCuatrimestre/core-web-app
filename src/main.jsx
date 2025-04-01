@@ -13,9 +13,9 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <HeroUIProvider>
-        <StyleContextProvider>
-          <App />
-        </StyleContextProvider>
+          <StyleContextProvider>
+            <App />
+          </StyleContextProvider>
       </HeroUIProvider>
     </QueryClientProvider>
   </StrictMode>
