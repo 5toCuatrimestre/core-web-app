@@ -15,6 +15,7 @@ import {
 import { users } from "../../json/users";
 import { useAllStyles } from "../../hooks/useStyles";
 import { LoadingSpinner } from "../../components/loadingSpinner";
+import toast from 'react-hot-toast';
 
 export function Style() {
   // Datos y columnas estáticas para la vista previa
@@ -99,7 +100,15 @@ export function Style() {
   // Guardar cambios en el contexto global
   const handleSaveChanges = () => {
     updateGlobalStyle(colors, colors.styleId);
-    console.log("Cambios de colores guardados");
+    toast.success('Estilo actualizado correctamente', {
+      position: 'top-center',
+      duration: 3000,
+      style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+      },
+    });
   };
 
   // Manejar selección de un tema (solo uno a la vez)
