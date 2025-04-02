@@ -10,6 +10,7 @@ import {
 } from "@heroui/react";
 import { useUploadCompanyLogo, useUpdateCompanyLogo, useCompanyInfo } from "../hooks/useCompany";
 import { LoadingSpinner } from "./loadingSpinner";
+import toast from 'react-hot-toast';
 
 export function ModalL({ isOpen, onClose, setProfilePhoto, companyId }) {
   const [file, setFile] = useState(null);
@@ -25,14 +26,14 @@ export function ModalL({ isOpen, onClose, setProfilePhoto, companyId }) {
   // Cargar la imagen por primera vez cuando el modal se abre
   useEffect(() => {
     if (companyInfo) {
-      console.log("Datos de la empresa recibidos:", companyInfo); // Log para verificar la respuesta completa
+      console.log("Datos de la empresa recibidos:", companyInfo);
 
       if (companyInfo.result && companyInfo.result.url) {
-        console.log("URL del logo recibida:", companyInfo.result.url); // Log para verificar la URL del logo
-        setProfilePhoto(companyInfo.result.url); // Establecer la URL del logo
+        console.log("URL del logo recibida:", companyInfo.result.url);
+        setProfilePhoto(companyInfo.result.url);
       }
     }
-  }, [companyInfo, setProfilePhoto]); // Dependemos de companyInfo y de setProfilePhoto
+  }, [companyInfo, setProfilePhoto]);
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -42,45 +43,83 @@ export function ModalL({ isOpen, onClose, setProfilePhoto, companyId }) {
     } else {
       setFile(null);
       setPreview(null);
-      alert("Por favor, seleccione un archivo válido (JPG, PNG, JPEG, SVG).");
+      toast.error("Por favor, seleccione un archivo válido (JPG, PNG, JPEG, SVG).", {
+        position: 'top-center',
+        duration: 3000,
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
     }
   };
 
   const handleSave = () => {
     if (!file) {
-      alert("Debe seleccionar una imagen antes de guardar.");
+      toast.error("Debe seleccionar una imagen antes de guardar.", {
+        position: 'top-center',
+        duration: 3000,
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
       return;
     }
 
-    setIsUploading(true); // Start loading
+    setIsUploading(true);
 
     // 1. Subir la imagen y obtener la URL
     uploadLogoMutate(file, {
       onSuccess: (imageUrl) => {
         // 2. Actualizar la URL del logo en la empresa
         updateLogoMutate(
-          { imageUrl }, // Ahora solo pasamos el objeto { imageUrl }
+          { imageUrl },
           {
-            onSuccess: () => {
-              setProfilePhoto(imageUrl); // Se actualiza en frontend
-              setIsUploading(false); // Stop loading on success
-              addToast({
-                title: "Logo actualizado",
-                description: "Se subió la imagen con éxito",
-                color: "success",
-              });
-              onClose();
+            onSuccess: (response) => {
+              if (response?.result) {
+                setProfilePhoto(imageUrl);
+                toast.success('Logo actualizado correctamente', {
+                  position: 'top-center',
+                  duration: 3000,
+                  style: {
+                    borderRadius: '10px',
+                    background: '#333',
+                    color: '#fff',
+                  },
+                });
+                onClose();
+              }
+              setIsUploading(false);
             },
             onError: () => {
-              setIsUploading(false); // Stop loading on error
-              alert("Error al actualizar la empresa.");
+              setIsUploading(false);
+              toast.error('Error al actualizar el logo', {
+                position: 'top-center',
+                duration: 3000,
+                style: {
+                  borderRadius: '10px',
+                  background: '#333',
+                  color: '#fff',
+                },
+              });
             },
           }
         );
       },
       onError: () => {
-        setIsUploading(false); // Stop loading on error
-        alert("Error al subir la imagen.");
+        setIsUploading(false);
+        toast.error('Error al subir la imagen', {
+          position: 'top-center',
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
       },
     });
   };

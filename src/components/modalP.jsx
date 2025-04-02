@@ -18,6 +18,8 @@ import {
   CardBody,
   Image,
 } from "@heroui/react";
+import { LoadingSpinner } from "./loadingSpinner";
+import toast from 'react-hot-toast';
 
 import { uploadImage, createMultimedia } from "../api/storageApi";
 
@@ -31,6 +33,7 @@ export function ModalP({ isOpen, onClose, product }) {
     categories: [],
   });
 
+  const [isUploading, setIsUploading] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState(new Set([]));
   const [activeTab, setActiveTab] = useState("details");
   const fileInputRef = useRef(null); // Referencia para el input file
@@ -105,25 +108,33 @@ export function ModalP({ isOpen, onClose, product }) {
   };
 
   // Función que sube la imagen y crea la multimedia al momento de seleccionar el archivo
-// modalP.jsx
   const handleAddImage = async (imageFile) => {
     try {
+      setIsUploading(true);
       console.log("Iniciando la subida de la imagen...");
-      const uploadedImageUrl = await uploadImage(imageFile); // Se sube la imagen
+      const uploadedImageUrl = await uploadImage(imageFile);
       console.log("Imagen subida con éxito, URL obtenida:", uploadedImageUrl);
 
-      // Se crea la multimedia con la URL para obtener el id
       const multimediaResponse = await createMultimedia(uploadedImageUrl);
       console.log("Multimedia creada con éxito, ID obtenido:", multimediaResponse.id);
 
       if (!multimediaResponse.id) {
         console.error("No se obtuvo un ID válido de la multimedia.");
+        toast.error('Error al procesar la imagen', {
+          position: 'top-center',
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
         return;
       }
 
       const newImage = {
-        id: multimediaResponse.id, // Se guarda el id para la relación
-        url: uploadedImageUrl,    // Se guarda la URL para vista previa
+        id: multimediaResponse.id,
+        url: uploadedImageUrl,
       };
 
       setFormData((prev) => ({
@@ -131,12 +142,32 @@ export function ModalP({ isOpen, onClose, product }) {
         images: [...prev.images, newImage],
       }));
 
+      toast.success('Imagen subida correctamente', {
+        position: 'top-center',
+        duration: 3000,
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
+
       console.log("Nueva imagen añadida al formulario:", newImage);
     } catch (error) {
       console.error("Error al agregar imagen:", error);
+      toast.error('Error al subir la imagen', {
+        position: 'top-center',
+        duration: 3000,
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
-
 
   // Función que maneja el cambio en el input file
   const handleFileChange = async (e) => {
@@ -177,12 +208,43 @@ export function ModalP({ isOpen, onClose, product }) {
 
     console.log("Datos a enviar al crear/actualizar el producto:", productData);
 
-    if (product) {
-      await updateProduct({ id: product.productId, productData });
-    } else {
-      await createProduct(productData);
+    try {
+      if (product) {
+        await updateProduct({ id: product.productId, productData });
+        toast.success('Producto actualizado correctamente', {
+          position: 'top-center',
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+      } else {
+        await createProduct(productData);
+        toast.success('Producto creado correctamente', {
+          position: 'top-center',
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+      }
+      handleClose();
+    } catch (error) {
+      console.error("Error al guardar el producto:", error);
+      toast.error(product ? 'Error al actualizar el producto' : 'Error al crear el producto', {
+        position: 'top-center',
+        duration: 3000,
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
     }
-    handleClose();
   };
 
   return (
@@ -303,21 +365,29 @@ export function ModalP({ isOpen, onClose, product }) {
                       <Button
                         size="sm"
                         color="primary"
+                        isDisabled={isUploading}
                         onPress={() => {
                           if (fileInputRef.current) {
                             fileInputRef.current.click();
                           }
                         }}
                       >
-                        Añadir Imagen
+                        {isUploading ? (
+                          <div className="flex items-center gap-2">
+                            <LoadingSpinner size="sm" />
+                            <span>Subiendo...</span>
+                          </div>
+                        ) : (
+                          'Añadir Imagen'
+                        )}
                       </Button>
-                      {/* Input oculto para seleccionar la imagen */}
                       <input
                         type="file"
                         accept="image/*"
                         ref={fileInputRef}
                         style={{ display: "none" }}
                         onChange={handleFileChange}
+                        disabled={isUploading}
                       />
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
