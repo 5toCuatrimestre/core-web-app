@@ -136,8 +136,8 @@ export function LoadDishesForModal({
                         radius="lg"
                         shadow="sm"
                         src={
-                          item.multimedia?.[0]?.url ||
-                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtRZhIqCoy71EH-axL3QYcCDGKdKdttyXRNA&s"
+                          item.multimedia?.[0]?.url ? `https://${item.multimedia[0].url}` :
+                          `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtRZhIqCoy71EH-axL3QYcCDGKdKdttyXRNA&s`
                         }
                         width="100%"
                       />

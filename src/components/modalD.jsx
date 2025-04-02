@@ -9,6 +9,7 @@ import {
 } from "@heroui/react";
 import { LoadDishesForModal } from "./loadDishesForModal";
 import { useUpdateMenu } from "../hooks/useMenu";
+import toast from 'react-hot-toast';
 
 export function ModalD({ isOpen, onClose, menuProducts, setMenuProducts }) {
   const [addedDishes, setAddedDishes] = useState(menuProducts);  // Se mantiene la lista de platos seleccionados
@@ -23,8 +24,32 @@ export function ModalD({ isOpen, onClose, menuProducts, setMenuProducts }) {
     const menuData = { productIds: combinedMenu };  // Creamos el objeto para enviar
 
     console.log("MenuDTO enviado:", menuData);
-    updateMenu(menuData);
-    onClose();
+    updateMenu(menuData, {
+      onSuccess: () => {
+        toast.success('Menú actualizado correctamente', {
+          position: 'top-center',
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+        onClose();
+      },
+      onError: (error) => {
+        console.error('Error al actualizar el menú:', error);
+        toast.error('Error al actualizar el menú', {
+          position: 'top-center',
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+      }
+    });
   };
 
   return (

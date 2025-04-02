@@ -63,7 +63,10 @@ export function LoadDishes({ isModal, menu }) {
                     className="w-full object-cover h-[140px]"
                     radius="lg"
                     shadow="sm"
-                    src={item.multimedia?.[0]?.url || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtRZhIqCoy71EH-axL3QYcCDGKdKdttyXRNA&s"}
+                    src={
+                      item.multimedia?.[0]?.url ? `https://${item.multimedia[0].url}` :
+                      `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtRZhIqCoy71EH-axL3QYcCDGKdKdttyXRNA&s`
+                    }
                     width="100%"
                   />
                 </CardBody>
@@ -98,7 +101,7 @@ export function LoadDishes({ isModal, menu }) {
                       className="relative flex-shrink-0 w-32 h-32"
                     >
                       <img
-                        src={image.url}
+                        src={`https://${image.url}`}
                         alt={`${selectedDish.name} imagen ${image.id}`}
                         className="w-full h-full object-cover rounded-lg shadow-md"
                       />
