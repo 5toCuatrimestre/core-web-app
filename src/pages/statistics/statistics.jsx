@@ -7,13 +7,26 @@ import { BarChartLayoutExample } from "./BarChartLayoutExample";
 import { BarChartGroupExample } from "./BarChartGroupExample";
 import { BarChartOnValueChangeExample } from "./BarChartOnValueChangeExample";
 import { DateRangePicker } from "@heroui/react";
-import { LoadingSpinner } from "../../components/loadingSpinner"; // Spinner de carga
+import { LoadingSpinner } from "../../components/loadingSpinner";
 
 export function Statistics() {
   const { style } = useContext(StyleContext);
 
-  // Ventas Totales
-  const [rangeTotalSales, setRangeTotalSales] = useState(["2025-01-22", "2025-03-25"]);
+  const getDateRange = () => {
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    const thirtyDaysFromNow = new Date(today);
+    thirtyDaysFromNow.setDate(today.getDate() + 30);
+
+    const formatDate = (date) => {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    };
+
+    return [formatDate(thirtyDaysAgo), formatDate(thirtyDaysFromNow)];
+  };
+
+  const [rangeTotalSales, setRangeTotalSales] = useState(getDateRange());
   const handleChangeTotalSales = (range) => {
     if (range.start && range.end) {
       const start = `${range.start.year}-${String(range.start.month).padStart(2, "0")}-${String(range.start.day).padStart(2, "0")}`;
@@ -23,7 +36,7 @@ export function Statistics() {
   };
 
   // Platillos Más y Menos Vendidos
-  const [rangeDishes, setRangeDishes] = useState(["2025-01-22", "2025-03-25"]);
+  const [rangeDishes, setRangeDishes] = useState(getDateRange());
   const handleChangeDishes = (range) => {
     if (range.start && range.end) {
       const start = `${range.start.year}-${String(range.start.month).padStart(2, "0")}-${String(range.start.day).padStart(2, "0")}`;
@@ -33,7 +46,7 @@ export function Statistics() {
   };
 
   // Ranking de Meseros
-  const [rangeWaiters, setRangeWaiters] = useState(["2025-01-22", "2025-03-25"]);
+  const [rangeWaiters, setRangeWaiters] = useState(getDateRange());
   const handleChangeWaiters = (range) => {
     if (range.start && range.end) {
       const start = `${range.start.year}-${String(range.start.month).padStart(2, "0")}-${String(range.start.day).padStart(2, "0")}`;
@@ -43,7 +56,7 @@ export function Statistics() {
   };
 
   // Horarios de Mayor y Menor Venta
-  const [rangePeakHours, setRangePeakHours] = useState(["2025-01-22", "2025-03-25"]);
+  const [rangePeakHours, setRangePeakHours] = useState(getDateRange());
   const handleChangePeakHours = (range) => {
     if (range.start && range.end) {
       const start = `${range.start.year}-${String(range.start.month).padStart(2, "0")}-${String(range.start.day).padStart(2, "0")}`;

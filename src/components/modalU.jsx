@@ -11,6 +11,7 @@ import {
   SelectItem,
 } from "@heroui/react";
 import { useUpdateUser, useCreateUser } from "../hooks/useUsers";
+import toast from 'react-hot-toast';
 
 export function ModalU({ isOpen, onClose, user }) {
   // Estados para los campos del formulario
@@ -23,8 +24,8 @@ export function ModalU({ isOpen, onClose, user }) {
   });
 
   // Hooks de TanStack Query para actualizar y crear usuario
-  const { mutate: updateUserMutate } = useUpdateUser();
-  const { mutate: createUserMutate } = useCreateUser();
+  const { mutate: updateUserMutate, isPending: isUpdating, isError: isUpdateError } = useUpdateUser();
+  const { mutate: createUserMutate, isPending: isCreating, isError: isCreateError } = useCreateUser();
 
   // Efecto para cargar los datos del usuario cuando se abre el modal para editar
   useEffect(() => {
@@ -74,14 +75,66 @@ export function ModalU({ isOpen, onClose, user }) {
       // Modo edición
       const userId = Number(user.userId);
       if (!isNaN(userId) && userId > 0) {
-        updateUserMutate({ id: userId, userData: formData });
+        updateUserMutate(
+          { id: userId, userData: formData },
+          {
+            onSuccess: () => {
+              toast.success('Usuario actualizado correctamente', {
+                position: 'top-center',
+                duration: 3000,
+                style: {
+                  borderRadius: '10px',
+                  background: '#333',
+                  color: '#fff',
+                },
+              });
+              handleClose();
+            },
+            onError: (error) => {
+              console.error('Error al actualizar:', error);
+              toast.error('Error al actualizar el usuario', {
+                position: 'top-center',
+                duration: 3000,
+                style: {
+                  borderRadius: '10px',
+                  background: '#333',
+                  color: '#fff',
+                },
+              });
+            }
+          }
+        );
       } else {
         console.error("ID del usuario inválido, no se envió la actualización.");
       }
     } else {
-      createUserMutate(formData);
+      createUserMutate(formData, {
+        onSuccess: () => {
+          toast.success('Usuario creado correctamente', {
+            position: 'top-center',
+            duration: 3000,
+            style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+            },
+          });
+          handleClose();
+        },
+        onError: (error) => {
+          console.error('Error al crear:', error);
+          toast.error('Error al crear el usuario', {
+            position: 'top-center',
+            duration: 3000,
+            style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+            },
+          });
+        }
+      });
     }
-    handleClose();
   };
 
   return (
@@ -158,7 +211,11 @@ export function ModalU({ isOpen, onClose, user }) {
                 <Button color="danger" variant="flat" onPress={handleClose}>
                   Cancelar
                 </Button>
-                <Button color="primary" onPress={handleSave}>
+                <Button 
+                  color="primary" 
+                  onPress={handleSave}
+                  isLoading={isCreating || isUpdating}
+                >
                   {user ? "Actualizar Usuario" : "Guardar Usuario"}
                 </Button>
               </ModalFooter>

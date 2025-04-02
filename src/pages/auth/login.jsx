@@ -7,6 +7,7 @@ import { StyleContext } from "../../core/StyleContext";
 import Strings from "../../utils/localizations/Strings";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { setToken } from "../../services/storage";
+import toast from 'react-hot-toast';
 
 export function Login() {
   const navigate = useNavigate();
@@ -23,7 +24,18 @@ export function Login() {
         setToken(data.jwt);
         navigate("/statistic");
       },
-      onError: (error) => console.error("Login failed:", error),
+      onError: (error) => {
+        toast.error('Error en las credenciales', {
+          position: 'top-center',
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: style.BgCard,
+            color: style.H1,
+            border: `1px solid ${style.BgInterface}`,
+          },
+        });
+      },
     });
   };
 

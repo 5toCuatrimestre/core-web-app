@@ -32,9 +32,9 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, userData }) => updateUser(id, userData),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries(["users"]);
-      queryClient.invalidateQueries(["user", id]); // Refresca el usuario específico
+      queryClient.invalidateQueries(["user", variables.id]); // Usamos el id de las variables
     },
   });
 };
