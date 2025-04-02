@@ -10,7 +10,7 @@ import {
 import { LoadDishesForModal } from "./loadDishesForModal";
 import { useUpdateMenu } from "../hooks/useMenu";
 
-export function ModalD({ isOpen, onClose, menuProducts }) {
+export function ModalD({ isOpen, onClose, menuProducts, setMenuProducts }) {
   const [addedDishes, setAddedDishes] = useState(menuProducts);  // Se mantiene la lista de platos seleccionados
   const { mutate: updateMenu } = useUpdateMenu();
 
@@ -36,6 +36,7 @@ export function ModalD({ isOpen, onClose, menuProducts }) {
             menuProducts={menuProducts}  // Se pasan los platos actuales como prop
             addedDishes={addedDishes}  // Se pasa el estado de platos seleccionados
             setAddedDishes={setAddedDishes}  // Se pasa la función para actualizar el estado
+            setMenuProducts={setMenuProducts}
           />
         </ModalBody>
         <ModalFooter>

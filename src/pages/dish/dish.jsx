@@ -73,6 +73,7 @@ export function Dish() {
             menuProducts={menuProducts} // Los productos ya asignados al menú
             allProducts={[]} // Aquí debes pasar todos los productos disponibles
             handleAddDish={handleAddDish} // Pasamos la función handleAddDish al modal
+            setMenuProducts={setMenuProducts}
           />
         </div>
       )}

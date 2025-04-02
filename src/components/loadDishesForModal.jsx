@@ -10,7 +10,15 @@ import {
 import { StyleContext } from "../core/StyleContext";
 import { getAllProducts } from "../api/productApi";
 
-export function LoadDishesForModal({ menuProducts, addedDishes, setAddedDishes }) {
+export function LoadDishesForModal({
+  menuProducts,
+  setMenuProducts,
+  addedDishes,
+  setAddedDishes,
+}) {
+  //useeffect para igualar menuProducts a addedDishes
+  console.log("MenuDTO recibido al inicio de loadDishes:", menuProducts);
+  console.log("AddedDishes recibido:", addedDishes);
   const [allProducts, setAllProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,32 +39,57 @@ export function LoadDishesForModal({ menuProducts, addedDishes, setAddedDishes }
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    if (allProducts.length && menuProducts.length) {
+      const productsToAdd = allProducts.filter(
+        (product) =>
+          menuProducts.includes(product.productId) &&
+          !addedDishes.some((added) => added.productId === product.productId)
+      );
+
+      if (productsToAdd.length) {
+        setAddedDishes((prev) => [...prev, ...productsToAdd]);
+      }
+    }
+  }, [allProducts, menuProducts]);
+
   const toggleProductSelection = (product) => {
-    const isSelected = addedDishes.some(p => p.productId === product.productId);
+    const isSelected = addedDishes.some(
+      (p) => p.productId === product.productId
+    );
     if (isSelected) {
-      // Si ya está seleccionado, lo eliminamos
-      setAddedDishes(prev => prev.filter(p => p.productId !== product.productId));
+      setAddedDishes((prev) =>
+        prev.filter((p) => p.productId !== product.productId)
+      );
     } else {
-      // Si no está seleccionado, lo agregamos
-      setAddedDishes(prev => [...prev, product]);
+      setAddedDishes((prev) => [...prev, product]);
     }
   };
+
+  useEffect(() => {
+    if (addedDishes && addedDishes.length > 0) {
+      const updatedMenuDTO = addedDishes.map((dish) => dish.productId);
+      setMenuProducts(updatedMenuDTO);
+      console.log("menuDTO actualizado:", updatedMenuDTO);
+    }
+  }, [addedDishes]);
 
   if (isLoading) return <p>Loading products...</p>;
   if (error) return <p>{error}</p>;
 
   // Filtramos para mostrar solo productos que no están en el menú actual
   const filteredProducts = allProducts.filter(
-    product => !menuProducts.some(p => p.productId === product.productId)
+    (product) => !menuProducts.some((p) => p.productId === product.productId)
   );
 
   // Filtramos productos por la búsqueda
-  const filteredAndSearchedProducts = filteredProducts.filter(product =>
+  const filteredAndSearchedProducts = filteredProducts.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const groupedProducts = filteredAndSearchedProducts.reduce((acc, product) => {
-    const mainCategory = product.productCategories?.[0]?.name || "Sin categoría";
+    const mainCategory =
+      product.productCategories?.[0]?.name || "Sin categoría";
     if (!acc[mainCategory]) acc[mainCategory] = [];
     acc[mainCategory].push(product);
     return acc;
