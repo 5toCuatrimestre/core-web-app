@@ -50,6 +50,9 @@ export function Style() {
   const [themes, setThemes] = useState([]);
   const [selectedThemeIndex, setSelectedThemeIndex] = useState(null);
   const [colors, setColors] = useState(defaultColors);
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [originalColors, setOriginalColors] = useState(null);
   
   // Cargar los temas cuando los datos estén disponibles
   useEffect(() => {
@@ -67,7 +70,6 @@ export function Style() {
         
         Object.keys(activeTheme).forEach(key => {
           if (colorLabels[key]) {
-            // Si es un valor de color, asegurarse de que sea un string
             formattedTheme[key] = typeof activeTheme[key] === 'string' 
               ? activeTheme[key] 
               : (activeTheme[key] === true ? '#000000' : '#' + activeTheme[key].toString(16).padStart(6, '0'));
@@ -77,6 +79,7 @@ export function Style() {
         });
         
         setColors(formattedTheme);
+        setOriginalColors(formattedTheme);
       }
     }
   }, [styles]);
@@ -94,21 +97,42 @@ export function Style() {
 
   // Actualizar colores al cambiar manualmente
   const handleColorChange = (key, color) => {
-    setColors((prev) => ({ ...prev, [key]: color.toHexString() }));
+    const newColors = { ...colors, [key]: color.toHexString() };
+    setColors(newColors);
+    setHasChanges(JSON.stringify(newColors) !== JSON.stringify(originalColors));
   };
 
   // Guardar cambios en el contexto global
-  const handleSaveChanges = () => {
-    updateGlobalStyle(colors, colors.styleId);
-    toast.success('Estilo actualizado correctamente', {
-      position: 'top-center',
-      duration: 3000,
-      style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-      },
-    });
+  const handleSaveChanges = async () => {
+    if (isSaving || !hasChanges) return;
+    
+    setIsSaving(true);
+    try {
+      await updateGlobalStyle(colors, colors.styleId);
+      setOriginalColors(colors);
+      setHasChanges(false);
+      toast.success('Estilo actualizado correctamente', {
+        position: 'top-center',
+        duration: 3000,
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
+    } catch (error) {
+      toast.error('Error al actualizar el estilo', {
+        position: 'top-center',
+        duration: 3000,
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Manejar selección de un tema (solo uno a la vez)
@@ -132,6 +156,7 @@ export function Style() {
     });
     
     setColors(formattedTheme);
+    setHasChanges(true); // Activar hasChanges cuando se selecciona un nuevo template
   };
 
   return (
@@ -326,8 +351,9 @@ export function Style() {
                 onPress={handleSaveChanges}
                 style={{ background: style.BgButton, color: style.P }}
                 className="w-full mt-2 md:mt-0"
+                isDisabled={!hasChanges || isSaving}
               >
-                Guardar Cambios
+                {isSaving ? "Guardando..." : "Guardar Cambios"}
               </Button>
             </CardFooter>
           </Card>
