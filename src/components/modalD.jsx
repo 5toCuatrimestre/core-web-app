@@ -13,9 +13,13 @@ import toast from 'react-hot-toast';
 
 export function ModalD({ isOpen, onClose, menuProducts, setMenuProducts }) {
   const [addedDishes, setAddedDishes] = useState(menuProducts);  // Se mantiene la lista de platos seleccionados
+  const [isSaving, setIsSaving] = useState(false);
   const { mutate: updateMenu } = useUpdateMenu();
 
   const handleSaveMenu = () => {
+    if (isSaving) return; // Prevenir múltiples clicks
+    
+    setIsSaving(true);
     const productIds = addedDishes.map((dish) => dish.productId);
 
     // Concatenar menuProducts con los nuevos productIds
@@ -48,6 +52,9 @@ export function ModalD({ isOpen, onClose, menuProducts, setMenuProducts }) {
             color: '#fff',
           },
         });
+      },
+      onSettled: () => {
+        setIsSaving(false);
       }
     });
   };
@@ -65,11 +72,15 @@ export function ModalD({ isOpen, onClose, menuProducts, setMenuProducts }) {
           />
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" variant="flat" onPress={onClose}>
+          <Button color="danger" variant="flat" onPress={onClose} isDisabled={isSaving}>
             Cancelar
           </Button>
-          <Button color="primary" onPress={handleSaveMenu}>
-            Guardar Menú
+          <Button 
+            color="primary" 
+            onPress={handleSaveMenu}
+            isDisabled={isSaving}
+          >
+            {isSaving ? "Guardando..." : "Guardar Menú"}
           </Button>
         </ModalFooter>
       </ModalContent>
