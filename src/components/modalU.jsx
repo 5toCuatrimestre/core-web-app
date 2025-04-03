@@ -26,6 +26,7 @@ export function ModalU({ isOpen, onClose, user }) {
   const [originalData, setOriginalData] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showErrorToast, setShowErrorToast] = useState(true);
 
   // Hooks de TanStack Query para actualizar y crear usuario
   const { mutate: updateUserMutate } = useUpdateUser();
@@ -117,6 +118,7 @@ export function ModalU({ isOpen, onClose, user }) {
         [name]: "",
       }));
     }
+    setShowErrorToast(true); // Resetear el estado del toast cuando hay cambios
   };
 
   // Función para manejar el cierre del modal y limpiar datos
@@ -136,35 +138,66 @@ export function ModalU({ isOpen, onClose, user }) {
 
   const hasRealChanges = () => {
     if (!originalData) return false;
-    return Object.keys(formData).some(key => {
+    
+    // Verificar cambios en campos básicos
+    const basicChanges = Object.keys(formData).some(key => {
+      if (key === 'images') return false; // Ignorar imágenes aquí
       const currentValue = formData[key]?.toString().trim() || "";
       const originalValue = originalData[key]?.toString().trim() || "";
       return currentValue !== originalValue;
     });
+
+    // Verificar cambios en imágenes solo en modo edición
+    if (user) {
+      const currentImages = formData.images?.map(img => img.id).sort() || [];
+      const originalImages = originalData.images?.map(img => img.id).sort() || [];
+      const imageChanges = JSON.stringify(currentImages) !== JSON.stringify(originalImages);
+      
+      return basicChanges || imageChanges;
+    }
+
+    return basicChanges;
   };
 
   const isFormValid = () => {
     const validationErrors = getValidationErrors();
-    const hasErrors = Object.keys(validationErrors).length > 0;
-
-    if (user) {
-      // En modo edición, solo se valida si hay cambios reales y no hay errores
-      return hasRealChanges() && !hasErrors;
-    } else {
-      // En modo creación, se valida que todos los campos estén llenos y no haya errores
-      const allFieldsFilled = Object.values(formData).every(value => 
-        value && value.toString().trim() !== ""
-      );
-      return allFieldsFilled && !hasErrors;
-    }
+    return Object.keys(validationErrors).length === 0;
   };
 
   // Función para guardar (crear o actualizar) el usuario
   const handleSave = () => {
+    if (user && !hasRealChanges()) {
+      if (showErrorToast) {
+        toast.error('No hay cambios para guardar', {
+          position: 'top-center',
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+        setShowErrorToast(false);
+      }
+      return;
+    }
+
     const validationErrors = getValidationErrors();
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
+      if (showErrorToast) {
+        toast.error('Por favor corrija los errores en el formulario', {
+          position: 'top-center',
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+        setShowErrorToast(false);
+      }
       return;
     }
 
@@ -357,7 +390,7 @@ export function ModalU({ isOpen, onClose, user }) {
                 <Button 
                   color="primary" 
                   onPress={handleSave}
-                  isDisabled={isSaving || !isFormValid()}
+                  isDisabled={isSaving}
                 >
                   {isSaving ? "Guardando..." : (user ? "Actualizar Usuario" : "Guardar Usuario")}
                 </Button>
