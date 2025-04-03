@@ -61,7 +61,7 @@ export function ModalU({ isOpen, onClose, user }) {
   const getValidationErrors = () => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\d+$/;
+    const phoneRegex = /^\d{10}$/;
 
     if (!formData.name.trim()) {
       newErrors.name = "El nombre es requerido";
@@ -79,10 +79,8 @@ export function ModalU({ isOpen, onClose, user }) {
 
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = "El teléfono es requerido";
-    } else if (formData.phoneNumber.length > 10) {
-      newErrors.phoneNumber = "El teléfono no puede exceder 10 dígitos";
     } else if (!phoneRegex.test(formData.phoneNumber)) {
-      newErrors.phoneNumber = "Solo se permiten números";
+      newErrors.phoneNumber = "El teléfono debe tener exactamente 10 dígitos";
     }
 
     if (!formData.rol) {
@@ -98,10 +96,20 @@ export function ModalU({ isOpen, onClose, user }) {
 
   // Función para manejar cambios en los inputs
   const handleChange = (name, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === "phoneNumber") {
+      // Solo permitir números y máximo 10 dígitos
+      if (/^\d*$/.test(value) && value.length <= 10) {
+        setFormData(prev => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
     // Limpiar el error cuando el usuario comienza a escribir
     if (errors[name]) {
       setErrors(prev => ({
@@ -261,10 +269,11 @@ export function ModalU({ isOpen, onClose, user }) {
                   maxLength={30}
                   errorMessage={errors.name}
                   isInvalid={!!errors.name}
+                  isRequired
                 />
                 <Input
                   label="Correo Electrónico"
-                  placeholder="Ingrese el correo"
+                  placeholder="Ingrese una dirección de correo electrónico valida"
                   variant="bordered"
                   type="email"
                   value={formData.email}
@@ -273,18 +282,28 @@ export function ModalU({ isOpen, onClose, user }) {
                   maxLength={30}
                   errorMessage={errors.email}
                   isInvalid={!!errors.email}
+                  isRequired
                 />
                 <Input
                   label="Número de Teléfono"
                   placeholder="Ingrese el teléfono"
                   variant="bordered"
-                  type="tel"
+                  type="number"
                   value={formData.phoneNumber}
-                  onValueChange={(value) => handleChange("phoneNumber", value)}
+                  onValueChange={(value) => {
+                    // Solo permitir números y máximo 10 dígitos
+                    if (/^\d*$/.test(value) && value.length <= 10) {
+                      handleChange("phoneNumber", value);
+                    }
+                  }}
                   isDisabled={isSaving}
                   maxLength={10}
                   errorMessage={errors.phoneNumber}
                   isInvalid={!!errors.phoneNumber}
+                  isRequired
+                  classNames={{
+                    input: "[-moz-appearance:_textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  }}
                 />
                 <Select
                   label="Rol"
@@ -295,6 +314,7 @@ export function ModalU({ isOpen, onClose, user }) {
                   isDisabled={isSaving}
                   errorMessage={errors.rol}
                   isInvalid={!!errors.rol}
+                  isRequired
                 >
                   <SelectItem key="ADMIN" value="ADMIN">
                     Administrador
@@ -315,6 +335,7 @@ export function ModalU({ isOpen, onClose, user }) {
                   isDisabled={isSaving}
                   errorMessage={errors.status}
                   isInvalid={!!errors.status}
+                  isRequired
                 >
                   <SelectItem key="ACTIVE" value="ACTIVE">
                     Activo
