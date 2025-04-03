@@ -29,14 +29,18 @@ export function ModalP({ isOpen, onClose, product }) {
     description: "",
     price: "",
     status: "active",
-    images: [], // Se almacenarán objetos con { id, url }
+    images: [],
     categories: [],
   });
 
   const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [errors, setErrors] = useState({});
   const [selectedCategories, setSelectedCategories] = useState(new Set([]));
   const [activeTab, setActiveTab] = useState("details");
-  const fileInputRef = useRef(null); // Referencia para el input file
+  const fileInputRef = useRef(null);
+  const [originalData, setOriginalData] = useState(null);
+  const [showErrorToast, setShowErrorToast] = useState(true);
 
   const allCategories = [
     { categoryId: 1, name: "Desayuno" },
@@ -49,14 +53,16 @@ export function ModalP({ isOpen, onClose, product }) {
 
   useEffect(() => {
     if (product) {
-      setFormData({
+      const initialData = {
         name: product.name || "",
         description: product.description || "",
         price: product.price?.toString() || "",
         status: product.status ? "active" : "inactive",
         images: product.multimedia || [],
         categories: product.productCategories || [],
-      });
+      };
+      setFormData(initialData);
+      setOriginalData(initialData);
       if (product.productCategories && product.productCategories.length > 0) {
         const categoryIds = product.productCategories.map((cat) =>
           cat.categoryId.toString()
@@ -66,24 +72,91 @@ export function ModalP({ isOpen, onClose, product }) {
         setSelectedCategories(new Set([]));
       }
     } else {
-      setFormData({
+      const emptyData = {
         name: "",
         description: "",
         price: "",
         status: "active",
         images: [],
         categories: [],
-      });
+      };
+      setFormData(emptyData);
+      setOriginalData(emptyData);
       setSelectedCategories(new Set([]));
     }
     setActiveTab("details");
+    setErrors({});
   }, [product, isOpen]);
 
+  const getValidationErrors = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "El nombre es requerido";
+    } else if (formData.name.length > 30) {
+      newErrors.name = "El nombre no puede exceder 30 caracteres";
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = "La descripción es requerida";
+    } else if (formData.description.length > 80) {
+      newErrors.description = "La descripción no puede exceder 80 caracteres";
+    }
+
+    if (!formData.price.trim()) {
+      newErrors.price = "El precio es requerido";
+    } else if (parseFloat(formData.price) < 0) {
+      newErrors.price = "El precio no puede ser negativo";
+    }
+
+    if (formData.categories.length === 0) {
+      newErrors.categories = "Debe seleccionar al menos una categoría";
+    }
+
+    return newErrors;
+  };
+
   const handleChange = (name, value) => {
-    setFormData((prev) => ({
+    if (name === 'price') {
+      // Permitir números, punto decimal y eliminar otros caracteres
+      let numericValue = value.replace(/[^0-9.]/g, '');
+      
+      // Eliminar múltiples puntos decimales
+      const parts = numericValue.split('.');
+      if (parts.length > 2) {
+        numericValue = parts[0] + '.' + parts.slice(1).join('');
+      }
+      
+      // Limitar parte entera a 6 dígitos
+      let integerPart = parts[0];
+      if (integerPart.length > 6) {
+        integerPart = integerPart.slice(0, 6);
+      }
+      
+      // Limitar parte decimal a 2 dígitos
+      let decimalPart = parts[1] || '';
+      if (decimalPart.length > 2) {
+        decimalPart = decimalPart.slice(0, 2);
+      }
+      
+      // Reconstruir el valor
+      value = decimalPart ? `${integerPart}.${decimalPart}` : integerPart;
+      
+      // Si el valor está vacío o no es un número válido, establecer como vacío
+      if (!value || isNaN(value)) {
+        value = '';
+      }
+    }
+    
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
+
+    // Validación en tiempo real
+    const validationErrors = getValidationErrors();
+    setErrors(validationErrors);
+    setShowErrorToast(true); // Resetear el estado del toast cuando hay cambios
   };
 
   const handleCategoryChange = (selectedKeys) => {
@@ -94,32 +167,32 @@ export function ModalP({ isOpen, onClose, product }) {
       );
       return { categoryId: parseInt(id), name: category ? category.name : "" };
     });
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       categories: selectedCategoriesArray,
     }));
+    if (errors.categories) {
+      setErrors(prev => ({
+        ...prev,
+        categories: "",
+      }));
+    }
   };
 
   const handleRemoveImage = (imageId) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       images: prev.images.filter((img) => img.id !== imageId),
     }));
   };
 
-  // Función que sube la imagen y crea la multimedia al momento de seleccionar el archivo
   const handleAddImage = async (imageFile) => {
     try {
       setIsUploading(true);
-      console.log("Iniciando la subida de la imagen...");
       const uploadedImageUrl = await uploadImage(imageFile);
-      console.log("Imagen subida con éxito, URL obtenida:", uploadedImageUrl);
-
       const multimediaResponse = await createMultimedia(uploadedImageUrl);
-      console.log("Multimedia creada con éxito, ID obtenido:", multimediaResponse.id);
 
       if (!multimediaResponse.id) {
-        console.error("No se obtuvo un ID válido de la multimedia.");
         toast.error('Error al procesar la imagen', {
           position: 'top-center',
           duration: 3000,
@@ -137,7 +210,7 @@ export function ModalP({ isOpen, onClose, product }) {
         url: uploadedImageUrl,
       };
 
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         images: [...prev.images, newImage],
       }));
@@ -151,8 +224,6 @@ export function ModalP({ isOpen, onClose, product }) {
           color: '#fff',
         },
       });
-
-      console.log("Nueva imagen añadida al formulario:", newImage);
     } catch (error) {
       console.error("Error al agregar imagen:", error);
       toast.error('Error al subir la imagen', {
@@ -169,13 +240,10 @@ export function ModalP({ isOpen, onClose, product }) {
     }
   };
 
-  // Función que maneja el cambio en el input file
   const handleFileChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      console.log("Imagen seleccionada:", file);
       await handleAddImage(file);
-      // Se limpia el input para poder volver a seleccionar la misma imagen si es necesario
       e.target.value = "";
     }
   };
@@ -191,10 +259,76 @@ export function ModalP({ isOpen, onClose, product }) {
     });
     setSelectedCategories(new Set([]));
     setActiveTab("details");
+    setErrors({});
     onClose();
   };
 
+  const hasRealChanges = () => {
+    if (!originalData) return false;
+    
+    // Verificar cambios en campos básicos
+    const basicChanges = Object.keys(formData).some(key => {
+      if (key === 'images') return false; // Ignorar imágenes aquí
+      const currentValue = formData[key]?.toString().trim() || "";
+      const originalValue = originalData[key]?.toString().trim() || "";
+      return currentValue !== originalValue;
+    });
+
+    // Verificar cambios en imágenes solo en modo edición
+    if (product) {
+      const currentImages = formData.images?.map(img => img.id).sort() || [];
+      const originalImages = originalData.images?.map(img => img.id).sort() || [];
+      const imageChanges = JSON.stringify(currentImages) !== JSON.stringify(originalImages);
+      
+      return basicChanges || imageChanges;
+    }
+
+    return basicChanges;
+  };
+
+  const isFormValid = () => {
+    const validationErrors = getValidationErrors();
+    return Object.keys(validationErrors).length === 0;
+  };
+
   const handleSave = async () => {
+    if (product && !hasRealChanges()) {
+      if (showErrorToast) {
+        toast.error('No hay cambios para guardar', {
+          position: 'top-center',
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+        setShowErrorToast(false);
+      }
+      return;
+    }
+
+    const validationErrors = getValidationErrors();
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      if (showErrorToast) {
+        toast.error('Por favor corrija los errores en el formulario', {
+          position: 'top-center',
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+        setShowErrorToast(false);
+      }
+      return;
+    }
+
+    setIsSaving(true);
+
     const productData = {
       name: formData.name,
       description: formData.description,
@@ -203,10 +337,8 @@ export function ModalP({ isOpen, onClose, product }) {
       productCategories: formData.categories.map((category) => ({
         categoryId: category.categoryId,
       })),
-      multimedia: formData.images.map((image) => ({ id: image.id })),
+      multimedia: formData.images?.map((image) => ({ id: image.id })) || [],
     };
-
-    console.log("Datos a enviar al crear/actualizar el producto:", productData);
 
     try {
       if (product) {
@@ -244,6 +376,8 @@ export function ModalP({ isOpen, onClose, product }) {
           color: '#fff',
         },
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -263,6 +397,11 @@ export function ModalP({ isOpen, onClose, product }) {
               {product ? "Editar Producto" : "Registrar Producto"}
             </ModalHeader>
             <ModalBody>
+              {isUploading && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <LoadingSpinner />
+                </div>
+              )}
               <Tabs
                 selectedKey={activeTab}
                 onSelectionChange={setActiveTab}
@@ -276,15 +415,21 @@ export function ModalP({ isOpen, onClose, product }) {
                       variant="bordered"
                       value={formData.name}
                       onValueChange={(value) => handleChange("name", value)}
+                      maxLength={30}
+                      errorMessage={errors.name}
+                      isInvalid={!!errors.name}
+                      isRequired
                     />
                     <Input
                       label="Descripción"
                       placeholder="Ingrese la descripción del producto"
                       variant="bordered"
                       value={formData.description}
-                      onValueChange={(value) =>
-                        handleChange("description", value)
-                      }
+                      onValueChange={(value) => handleChange("description", value)}
+                      maxLength={80}
+                      errorMessage={errors.description}
+                      isInvalid={!!errors.description}
+                      isRequired
                     />
                     <Input
                       label="Precio"
@@ -298,6 +443,25 @@ export function ModalP({ isOpen, onClose, product }) {
                           <span className="text-default-400 text-small">$</span>
                         </div>
                       }
+                      min="0"
+                      step="0.01"
+                      errorMessage={errors.price}
+                      isInvalid={!!errors.price}
+                      isRequired
+                      classNames={{
+                        input: "[-moz-appearance:_textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      }}
+                      onKeyDown={(e) => {
+                        // Permitir números, punto decimal, backspace, delete, tab, enter, flechas
+                        if (!/[0-9.]/.test(e.key) && 
+                            !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                        // Permitir solo un punto decimal
+                        if (e.key === '.' && formData.price.includes('.')) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                     <Select
                       label="Estado"
@@ -305,6 +469,7 @@ export function ModalP({ isOpen, onClose, product }) {
                       onSelectionChange={(keys) =>
                         handleChange("status", Array.from(keys)[0])
                       }
+                      isRequired
                     >
                       <SelectItem key="active" value="active">
                         Activo
@@ -324,6 +489,7 @@ export function ModalP({ isOpen, onClose, product }) {
                         onValueChange={handleCategoryChange}
                         orientation="horizontal"
                         className="gap-1 flex flex-wrap"
+                        isRequired
                       >
                         {allCategories.map((category) => (
                           <Checkbox
@@ -336,6 +502,9 @@ export function ModalP({ isOpen, onClose, product }) {
                         ))}
                       </CheckboxGroup>
                     </div>
+                    {errors.categories && (
+                      <p className="text-danger text-sm mt-2">{errors.categories}</p>
+                    )}
                     <div className="mt-4">
                       <h4 className="text-sm font-medium mb-2">
                         Categorías seleccionadas:
@@ -419,11 +588,20 @@ export function ModalP({ isOpen, onClose, product }) {
               </Tabs>
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="flat" onPress={handleClose}>
+              <Button 
+                color="danger" 
+                variant="flat" 
+                onPress={handleClose}
+                isDisabled={isSaving || isUploading}
+              >
                 Cancelar
               </Button>
-              <Button color="primary" onPress={handleSave}>
-                {product ? "Actualizar Producto" : "Guardar Producto"}
+              <Button 
+                color="primary" 
+                onPress={handleSave}
+                isDisabled={isSaving || isUploading || (product && !hasRealChanges())}
+              >
+                {isSaving ? "Guardando..." : (product ? "Actualizar Producto" : "Guardar Producto")}
               </Button>
             </ModalFooter>
           </>
