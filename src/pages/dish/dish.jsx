@@ -19,14 +19,12 @@ export function Dish() {
     if (menu && menu.result) {
       const productIds = menu.result.products.map(product => product.productId); // Extraemos los IDs de los productos
       setMenuProducts(productIds); // Establecemos los IDs de los productos del menú en el estado
-      console.log("IDs de los productos del menú cargados:", productIds); // Verificamos los IDs cargados
     }
   }, [menu]);
   
   const handleAddDish = (dish) => {
     if (!menuProducts.includes(dish.productId)) {
       setMenuProducts([...menuProducts, dish.productId]); // Agregar el ID del platillo seleccionado
-      console.log("Platillo agregado:", dish); // Log cuando se agrega un platillo
     }
   };
 

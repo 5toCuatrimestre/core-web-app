@@ -18,7 +18,7 @@ import { useMenu } from "../hooks/useMenu"; // Importar el hook que obtiene el m
 export function LoadDishes({ isModal, menu }) {
   const [selectedDish, setSelectedDish] = useState(null); // Para el modal de platillo seleccionado
   const { style } = useContext(StyleContext);
-  console.log("Menu en LoadDishes:", menu); // Log para verificar los datos
+ // Log para verificar los datos
 
   // Agrupar los productos por categoría
   const groupedProducts = menu?.result?.products.reduce((acc, product) => {
@@ -40,14 +40,14 @@ export function LoadDishes({ isModal, menu }) {
           <h2 className="text-lg font-bold mb-4" style={{ color: style.H3 }}>
             {category}
           </h2>
-          <div className="gap-4 grid grid-cols-4 sm:grid-cols-8">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
             {items.map((item) => (
               <Card
                 key={item.productId}
                 isPressable
                 shadow="sm"
                 onPress={() => setSelectedDish(item)}
-                className="w-full flex flex-col relative"
+                className="w-full flex flex-col relative hover:scale-[1.02] transition-transform duration-200"
               >
                 <CardBody className="overflow-visible p-0 relative">
                   {/* Checkbox para seleccionar el platillo */}
@@ -60,7 +60,7 @@ export function LoadDishes({ isModal, menu }) {
                   )}
                   <Image
                     alt={item.name}
-                    className="w-full object-cover h-[140px]"
+                    className="w-full object-cover h-[140px] sm:h-[160px] md:h-[180px]"
                     radius="lg"
                     shadow="sm"
                     src={
@@ -70,9 +70,9 @@ export function LoadDishes({ isModal, menu }) {
                     width="100%"
                   />
                 </CardBody>
-                <CardFooter className="w-full flex flex-col items-start text-left">
-                  <b className="break-words self-start">{item.name}</b>
-                  <p className="text-default-500 self-start">
+                <CardFooter className="w-full flex flex-col items-start text-left p-2 sm:p-3">
+                  <b className="break-words self-start text-sm sm:text-base">{item.name}</b>
+                  <p className="text-default-500 self-start text-xs sm:text-sm">
                     ${item.price.toFixed(2)}
                   </p>
                 </CardFooter>
@@ -88,9 +88,11 @@ export function LoadDishes({ isModal, menu }) {
           isOpen={Boolean(selectedDish)}
           onOpenChange={() => setSelectedDish(null)}
           backdrop="blur"
+          size="2xl"
+          scrollBehavior="inside"
         >
           <ModalContent>
-            <ModalHeader>{selectedDish.name}</ModalHeader>
+            <ModalHeader className="text-lg sm:text-xl">{selectedDish.name}</ModalHeader>
             <ModalBody>
               {/* Carrusel de imágenes */}
               <div className="max-w-full overflow-x-auto overflow-y-hidden py-2 flex gap-2 -mt-2">
@@ -98,7 +100,7 @@ export function LoadDishes({ isModal, menu }) {
                   {(selectedDish.multimedia || []).map((image) => (
                     <div
                       key={image.id}
-                      className="relative flex-shrink-0 w-32 h-32"
+                      className="relative flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32"
                     >
                       <img
                         src={`https://${image.url}`}
@@ -111,11 +113,11 @@ export function LoadDishes({ isModal, menu }) {
               </div>
 
               {/* Detalles del platillo */}
-              <p className="text-lg">{selectedDish.description}</p>
-              <p className="text-xl font-bold mt-2">
+              <p className="text-base sm:text-lg mt-4">{selectedDish.description}</p>
+              <p className="text-lg sm:text-xl font-bold mt-2">
                 Precio: ${selectedDish.price.toFixed(2)}
               </p>
-              <p className="text-sm text-default-500 mt-2">
+              <p className="text-xs sm:text-sm text-default-500 mt-2">
                 Categorías:{" "}
                 {selectedDish.productCategories.map((cat) => cat.name).join(", ")}
               </p>

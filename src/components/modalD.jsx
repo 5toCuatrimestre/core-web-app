@@ -6,6 +6,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
+  Spinner,
 } from "@heroui/react";
 import { LoadDishesForModal } from "./loadDishesForModal";
 import { useUpdateMenu } from "../hooks/useMenu";
@@ -15,6 +16,7 @@ export function ModalD({ isOpen, onClose, menuProducts, setMenuProducts }) {
   const [addedDishes, setAddedDishes] = useState(menuProducts);  // Se mantiene la lista de platos seleccionados
   const [isSaving, setIsSaving] = useState(false);
   const { mutate: updateMenu } = useUpdateMenu();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSaveMenu = () => {
     if (isSaving) return; // Prevenir múltiples clicks
@@ -27,7 +29,6 @@ export function ModalD({ isOpen, onClose, menuProducts, setMenuProducts }) {
 
     const menuData = { productIds: combinedMenu };  // Creamos el objeto para enviar
 
-    console.log("MenuDTO enviado:", menuData);
     updateMenu(menuData, {
       onSuccess: () => {
         toast.success('Menú actualizado correctamente', {
@@ -62,23 +63,30 @@ export function ModalD({ isOpen, onClose, menuProducts, setMenuProducts }) {
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose} backdrop="blur">
       <ModalContent size="full" className="h-5/6">
-        <ModalHeader>Registrar Menú</ModalHeader>
-        <ModalBody className="overflow-y-auto">
+        <ModalHeader className="border-b pb-3">Registrar Menú</ModalHeader>
+        <ModalBody className="p-0 overflow-hidden">
           <LoadDishesForModal
-            menuProducts={menuProducts}  // Se pasan los platos actuales como prop
-            addedDishes={addedDishes}  // Se pasa el estado de platos seleccionados
-            setAddedDishes={setAddedDishes}  // Se pasa la función para actualizar el estado
+            menuProducts={menuProducts}
+            addedDishes={addedDishes}
+            setAddedDishes={setAddedDishes}
             setMenuProducts={setMenuProducts}
+            setIsLoading={setIsLoading}
           />
         </ModalBody>
-        <ModalFooter>
-          <Button color="danger" variant="flat" onPress={onClose} isDisabled={isSaving}>
+        <ModalFooter className="border-t pt-3">
+          <Button 
+            color="danger" 
+            variant="flat" 
+            onPress={onClose} 
+            isDisabled={isSaving || isLoading}
+          >
             Cancelar
           </Button>
           <Button 
             color="primary" 
             onPress={handleSaveMenu}
-            isDisabled={isSaving}
+            isDisabled={isSaving || isLoading}
+            startContent={isSaving ? <Spinner size="sm" color="white" /> : null}
           >
             {isSaving ? "Guardando..." : "Guardar Menú"}
           </Button>
