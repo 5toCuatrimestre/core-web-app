@@ -12,7 +12,7 @@ import { useUploadCompanyLogo, useUpdateCompanyLogo, useCompanyInfo } from "../h
 import { LoadingSpinner } from "./loadingSpinner";
 import toast from 'react-hot-toast';
 
-export function ModalL({ isOpen, onClose, setProfilePhoto, companyId }) {
+export function ModalL({ isOpen, onClose, setProfilePhoto}) {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);

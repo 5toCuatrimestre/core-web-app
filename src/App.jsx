@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import { BaseLayout } from "./pages/layouts/BaseLayout";
 import { Login } from "./pages/auth/login";
@@ -14,6 +15,21 @@ import { Products } from "./pages/products/products";
 import { Dish } from "./pages/dish/dish";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { LoadingSpinner } from "./components/loadingSpinner";
+import { getToken } from "./services/storage";
+
+// Componente para manejar la redirección del login
+const LoginRoute = () => {
+  const location = useLocation();
+  const token = getToken();
+
+  if (token && token !== "undefined") {
+    // Si hay un token válido, redirige a la página anterior o a /user por defecto
+    const from = location.state?.from?.pathname || "/user";
+    return <Navigate to={from} replace />;
+  }
+
+  return <Login />;
+};
 
 function App() {
   return (
@@ -22,8 +38,8 @@ function App() {
         {/* Redirige la raíz al login */}
         <Route path="/" element={<Navigate to="/login" />} />
 
-        {/* Ruta pública */}
-        <Route path="/login" element={<Login />} />
+        {/* Ruta pública con verificación de token */}
+        <Route path="/login" element={<LoginRoute />} />
 
         {/* Rutas protegidas */}
         <Route element={<ProtectedRoute />}>

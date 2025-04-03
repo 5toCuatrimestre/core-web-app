@@ -6,6 +6,7 @@ import { Outlet } from "react-router-dom";
 import { StyleContext } from "../../core/StyleContext";
 import { Button } from "@heroui/react";
 import { ModalL } from "../../components/modalL";
+import { removeToken } from "../../services/storage";
 
 const { Sider, Content } = Layout;
 
@@ -55,7 +56,10 @@ export function BaseLayout() {
             <Button
               className="text-left hover:opacity-75 rounded px-4 py-2"
               style={{ background: style.BgButton, color: style.P }}
-              onClick={() => navigate("/")}
+              onClick={() => {
+                removeToken();
+                navigate("/");
+              }}
             >
               Cerrar sesión
             </Button>
