@@ -21,12 +21,15 @@ export function ModalU({ isOpen, onClose, user }) {
     phoneNumber: "",
     rol: "",
     status: "",
+    userId: null
   });
 
   const [originalData, setOriginalData] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState({});
   const [showErrorToast, setShowErrorToast] = useState(true);
+  const [serverError, setServerError] = useState(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   // Hooks de TanStack Query para actualizar y crear usuario
   const { mutate: updateUserMutate } = useUpdateUser();
@@ -41,6 +44,7 @@ export function ModalU({ isOpen, onClose, user }) {
         phoneNumber: user.phoneNumber || "",
         rol: user.rol || "",
         status: user.status || "",
+        userId: user.userId || null
       };
       setFormData(initialData);
       setOriginalData(initialData);
@@ -52,11 +56,14 @@ export function ModalU({ isOpen, onClose, user }) {
         phoneNumber: "",
         rol: "",
         status: "",
+        userId: null
       };
       setFormData(emptyData);
       setOriginalData(emptyData);
     }
     setErrors({});
+    setServerError(null);
+    setHasChanges(false);
   }, [user, isOpen]);
 
   const getValidationErrors = () => {
@@ -119,6 +126,8 @@ export function ModalU({ isOpen, onClose, user }) {
       }));
     }
     setShowErrorToast(true); // Resetear el estado del toast cuando hay cambios
+    setServerError(null); // Limpiar error del servidor
+    setHasChanges(true); // Indicar que hay cambios
   };
 
   // Función para manejar el cierre del modal y limpiar datos
@@ -129,10 +138,13 @@ export function ModalU({ isOpen, onClose, user }) {
       phoneNumber: "",
       rol: "",
       status: "",
+      userId: null
     });
     setOriginalData(null);
     setIsSaving(false);
     setErrors({});
+    setServerError(null);
+    setHasChanges(false);
     onClose();
   };
 
@@ -226,7 +238,9 @@ export function ModalU({ isOpen, onClose, user }) {
             },
             onError: (error) => {
               console.error('Error al actualizar:', error);
-              toast.error('Error al actualizar el usuario', {
+              const errorMessage = error.response?.data?.text || 'Error al actualizar el usuario';
+              setServerError(errorMessage);
+              toast.error(errorMessage, {
                 position: 'top-center',
                 duration: 3000,
                 style: {
@@ -262,7 +276,9 @@ export function ModalU({ isOpen, onClose, user }) {
         },
         onError: (error) => {
           console.error('Error al crear:', error);
-          toast.error('Error al crear el usuario', {
+          const errorMessage = error.response?.data?.text || 'Error al crear el usuario';
+          setServerError(errorMessage);
+          toast.error(errorMessage, {
             position: 'top-center',
             duration: 3000,
             style: {
@@ -344,20 +360,25 @@ export function ModalU({ isOpen, onClose, user }) {
                   onSelectionChange={(keys) =>
                     handleChange("rol", Array.from(keys)[0])
                   }
-                  isDisabled={isSaving}
+                  isDisabled={isSaving || (user?.rol === "ADMIN" && user?.userId === Number(user?.userId))}
                   errorMessage={errors.rol}
                   isInvalid={!!errors.rol}
                   isRequired
                 >
-                  <SelectItem key="ADMIN" value="ADMIN">
-                    Administrador
-                  </SelectItem>
-                  <SelectItem key="LEADER" value="LEADER">
-                    Líder
-                  </SelectItem>
-                  <SelectItem key="WAITER" value="WAITER">
-                    Mesero
-                  </SelectItem>
+                  {user?.rol === "ADMIN" && user?.userId === Number(user?.userId) ? (
+                    <SelectItem key="ADMIN" value="ADMIN">
+                      Administrador
+                    </SelectItem>
+                  ) : (
+                    <>
+                      <SelectItem key="LEADER" value="LEADER">
+                        Líder
+                      </SelectItem>
+                      <SelectItem key="WAITER" value="WAITER">
+                        Mesero
+                      </SelectItem>
+                    </>
+                  )}
                 </Select>
                 <Select
                   label="Estado"
@@ -390,7 +411,7 @@ export function ModalU({ isOpen, onClose, user }) {
                 <Button 
                   color="primary" 
                   onPress={handleSave}
-                  isDisabled={isSaving}
+                  isDisabled={isSaving || !hasChanges || !!serverError}
                 >
                   {isSaving ? "Guardando..." : (user ? "Actualizar Usuario" : "Guardar Usuario")}
                 </Button>
