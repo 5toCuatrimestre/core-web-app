@@ -9,6 +9,7 @@ import {
 import { BaseLayout } from "./pages/layouts/BaseLayout";
 import { Login } from "./pages/auth/login";
 import { Style } from "./pages/style/style";
+import { Waiter } from "./pages/waiter/waiter";
 import { Users } from "./pages/user/users";
 import { Statistics } from "./pages/statistics/statistics";
 import { Products } from "./pages/products/products";
@@ -40,6 +41,8 @@ function App() {
 
         {/* Ruta pública con verificación de token */}
         <Route path="/login" element={<LoginRoute />} />
+
+        <Route path="/waiter" element={<Waiter />} />
 
         {/* Rutas protegidas */}
         <Route element={<ProtectedRoute />}>
