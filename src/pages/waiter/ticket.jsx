@@ -3,11 +3,8 @@ import { StyleContext } from "../../core/StyleContext";
 import { Button } from "@heroui/react";
 import { QRCodeSVG } from "qrcode.react";
 import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
-import { getTicket } from "../../api/waiterApi";
+import { getTicket } from "../../api/waiterApi"
 import { useParams } from "react-router-dom";
-
-// Obtener el dominio de las variables de entorno
-const domain = import.meta.env.VITE_APP_DOMAIN || 'http://localhost:5173';
 
 // Estilos para el PDF
 const styles = StyleSheet.create({
@@ -61,7 +58,6 @@ const TicketPDF = ({ data }) => {
           <Text style={styles.info}>Fecha: {data.fecha}</Text>
           <Text style={styles.info}>Hora: {data.hora}</Text>
           <Text style={styles.info}>Mesero: {data.mesero}</Text>
-          <Text style={styles.info}>Mesa: {data.mesa}</Text>
         </View>
 
         <View style={styles.table}>
@@ -94,7 +90,8 @@ const TicketPDF = ({ data }) => {
 export function Ticket() {
   const { style } = useContext(StyleContext);
   const { sellId } = useParams();
-  const qrValue = `${domain}/waiter?sellId=${sellId}`;
+  const domain = window.location.origin;
+  const qrValue = `${domain}/waiter/${sellId}`;
   const [ticketData, setTicketData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -217,7 +214,6 @@ export function Ticket() {
               <p>Fecha: {ticketData.fecha}</p>
               <p>Hora: {ticketData.hora}</p>
               <p>Mesero: {ticketData.mesero}</p>
-              <p>Mesa: {ticketData.mesa}</p>
               <p>Subtotal: ${ticketData.subtotal.toFixed(2)}</p>
               <p>IVA: ${(ticketData.total - ticketData.subtotal).toFixed(2)}</p>
               <p>Total: ${ticketData.total.toFixed(2)}</p>

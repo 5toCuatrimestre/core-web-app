@@ -3,13 +3,12 @@ import { StyleContext } from "../../core/StyleContext";
 import { StarFilled, StarOutlined } from "@ant-design/icons";
 import { Button } from "@heroui/react";
 import toast from "react-hot-toast";
-import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { rateWaiter } from "../../api/waiterApi";
 
 export function Waiter() {
   const { style } = useContext(StyleContext);
-  const [searchParams] = useSearchParams();
-  const sellId = searchParams.get('sellId');
+  const { sellId } = useParams();
 
   const [rating, setRating] = useState(0);
   const [isLoading, setIsLoading] = useState(false);

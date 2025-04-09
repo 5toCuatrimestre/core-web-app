@@ -44,7 +44,7 @@ function App() {
         {/* Ruta pública con verificación de token */}
         <Route path="/login" element={<LoginRoute />} />
 
-        <Route path="/waiter" element={<Waiter />} />
+        <Route path="/waiter/:sellId" element={<Waiter />} />
         <Route path="/ticket/:sellId" element={<Ticket />} />
 
         {/* Rutas protegidas */}
