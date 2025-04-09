@@ -6,10 +6,12 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import React from 'react';
 import { BaseLayout } from "./pages/layouts/BaseLayout";
 import { Login } from "./pages/auth/login";
 import { Style } from "./pages/style/style";
 import { Waiter } from "./pages/waiter/waiter";
+import { Ticket } from "./pages/waiter/ticket";
 import { Users } from "./pages/user/users";
 import { Statistics } from "./pages/statistics/statistics";
 import { Products } from "./pages/products/products";
@@ -43,6 +45,7 @@ function App() {
         <Route path="/login" element={<LoginRoute />} />
 
         <Route path="/waiter" element={<Waiter />} />
+        <Route path="/ticket/:sellId" element={<Ticket />} />
 
         {/* Rutas protegidas */}
         <Route element={<ProtectedRoute />}>
