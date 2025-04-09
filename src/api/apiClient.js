@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Usar la IP de la laptop para acceder desde otros dispositivos en la red
-const baseURL = "http://192.168.0.146:5000/core";
+const baseURL = "https://ucore.cloud/core";
 
 const apiClient = axios.create({
   baseURL,
