@@ -1,4 +1,5 @@
 // src/routes/ProtectedRoute.jsx
+import React from 'react';
 import { Navigate, Outlet } from "react-router-dom";
 import { getToken } from "../services/storage";
 import {jwtDecode} from "jwt-decode"; // opcional, para validar la expiración

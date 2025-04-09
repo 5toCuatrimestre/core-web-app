@@ -1,11 +1,14 @@
 import axios from "axios";
 
-// Correcto (URL relativa para que el proxy funcione)
-const apiClient = axios.create({
-  baseURL: "/core",
-  headers: { "Content-Type": "application/json" },
-});
+// Usar la IP de la laptop para acceder desde otros dispositivos en la red
+const baseURL = "http://192.168.0.146:5000/core";
 
+const apiClient = axios.create({
+  baseURL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
